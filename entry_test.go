@@ -13,13 +13,13 @@ func TestEntry_WithFields(t *testing.T) {
 	qt.Assert(t, a.Fields, qt.IsNil)
 
 	b := a.WithFields(Fields{{"foo", "bar"}})
-	qt.Assert(t, a.mergedFields(), qt.IsNil)
+	qt.Assert(t, a.distinctFieldsLastByName(), qt.IsNil)
 
 	c := a.WithFields(Fields{{"foo", "hello"}, {"bar", "world"}})
 	d := c.WithFields(Fields{{"baz", "jazz"}})
-	qt.Assert(t, b.mergedFields(), qt.DeepEquals, Fields{{"foo", "bar"}})
-	qt.Assert(t, c.mergedFields(), qt.DeepEquals, Fields{{"foo", "hello"}, {"bar", "world"}})
-	qt.Assert(t, d.mergedFields(), qt.DeepEquals, Fields{{"foo", "hello"}, {"bar", "world"}, {"baz", "jazz"}})
+	qt.Assert(t, b.distinctFieldsLastByName(), qt.DeepEquals, Fields{{"foo", "bar"}})
+	qt.Assert(t, c.distinctFieldsLastByName(), qt.DeepEquals, Fields{{"foo", "hello"}, {"bar", "world"}})
+	qt.Assert(t, d.distinctFieldsLastByName(), qt.DeepEquals, Fields{{"foo", "hello"}, {"bar", "world"}, {"baz", "jazz"}})
 
 	e := c.finalize(InfoLevel, "upload")
 	qt.Assert(t, "upload", qt.Equals, e.Message)
@@ -31,24 +31,24 @@ func TestEntry_WithFields(t *testing.T) {
 func TestEntry_WithField(t *testing.T) {
 	a := NewEntry(nil)
 	b := a.WithField("foo", "baz").WithField("foo", "bar")
-	qt.Assert(t, a.mergedFields(), qt.IsNil)
-	qt.Assert(t, b.mergedFields(), qt.DeepEquals, Fields{{"foo", "bar"}})
+	qt.Assert(t, a.distinctFieldsLastByName(), qt.IsNil)
+	qt.Assert(t, b.distinctFieldsLastByName(), qt.DeepEquals, Fields{{"foo", "bar"}})
 }
 
 func TestEntry_WithError(t *testing.T) {
 	a := NewEntry(nil)
 	b := a.WithError(fmt.Errorf("boom"))
-	qt.Assert(t, a.mergedFields(), qt.IsNil)
-	qt.Assert(t, b.mergedFields(), qt.DeepEquals, Fields{{"error", "boom"}})
+	qt.Assert(t, a.distinctFieldsLastByName(), qt.IsNil)
+	qt.Assert(t, b.distinctFieldsLastByName(), qt.DeepEquals, Fields{{"error", "boom"}})
 }
 
 func TestEntry_WithError_fields(t *testing.T) {
 	a := NewEntry(nil)
 	b := a.WithError(errFields("boom"))
-	qt.Assert(t, a.mergedFields(), qt.IsNil)
+	qt.Assert(t, a.distinctFieldsLastByName(), qt.IsNil)
 	qt.Assert(t,
 
-		b.mergedFields(), qt.DeepEquals, Fields{
+		b.distinctFieldsLastByName(), qt.DeepEquals, Fields{
 			{"error", "boom"},
 			{"reason", "timeout"},
 		})
@@ -58,14 +58,14 @@ func TestEntry_WithError_fields(t *testing.T) {
 func TestEntry_WithError_nil(t *testing.T) {
 	a := NewEntry(nil)
 	b := a.WithError(nil)
-	qt.Assert(t, a.mergedFields(), qt.IsNil)
-	qt.Assert(t, b.mergedFields(), qt.IsNil)
+	qt.Assert(t, a.distinctFieldsLastByName(), qt.IsNil)
+	qt.Assert(t, b.distinctFieldsLastByName(), qt.IsNil)
 }
 
 func TestEntry_WithDuration(t *testing.T) {
 	a := NewEntry(nil)
 	b := a.WithDuration(time.Second * 2)
-	qt.Assert(t, b.mergedFields(), qt.DeepEquals, Fields{{"duration", int64(2000)}})
+	qt.Assert(t, b.distinctFieldsLastByName(), qt.DeepEquals, Fields{{"duration", int64(2000)}})
 }
 
 type errFields string
