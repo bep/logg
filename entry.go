@@ -9,7 +9,10 @@ import (
 )
 
 // assert interface compliance.
-var _ Interface = (*EntryFields)(nil)
+var (
+	_ Interface = (*EntryFields)(nil)
+	_ Interface = (*Entry)(nil)
+)
 
 // Now returns the current time.
 var Now = time.Now
