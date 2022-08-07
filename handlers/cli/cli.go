@@ -6,7 +6,6 @@ import (
 	"io"
 	"os"
 	"sync"
-	"time"
 
 	"github.com/bep/log"
 	"github.com/fatih/color"
@@ -15,9 +14,6 @@ import (
 
 // Default handler outputting to stderr.
 var Default = New(os.Stderr)
-
-// start time.
-var start = time.Now()
 
 var bold = color.New(color.Bold)
 
