@@ -17,8 +17,12 @@ type Pet struct {
 
 func (p *Pet) Fields() log.Fields {
 	return log.Fields{
-		"name": p.Name,
-		"age":  p.Age,
+		log.Field{
+			"name", p.Name,
+		},
+		log.Field{
+			"age", p.Age,
+		},
 	}
 }
 
@@ -41,7 +45,10 @@ func TestFielder(t *testing.T) {
 	log.WithFields(pet).Info("add pet")
 
 	e := h.Entries[0]
-	qt.Assert(t, e.Fields, qt.DeepEquals, log.Fields{"name": "Tobi", "age": 3})
+	qt.Assert(t, e.Fields, qt.DeepEquals, log.Fields{
+		{"name", "Tobi"},
+		{"age", 3},
+	})
 }
 
 // Unstructured logging is supported, but not recommended since it is hard to query.
@@ -63,9 +70,9 @@ func Example_errors() {
 // Multiple fields can be set, via chaining, or WithFields().
 func Example_multipleFields() {
 	log.WithFields(log.Fields{
-		"user": "Tobi",
-		"file": "sloth.png",
-		"type": "image/png",
+		{"user", "Tobi"},
+		{"file", "sloth.png"},
+		{"type", "image/png"},
 	}).Info("upload")
 }
 

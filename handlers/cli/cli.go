@@ -61,18 +61,17 @@ func New(w io.Writer) *Handler {
 func (h *Handler) HandleLog(e *log.Entry) error {
 	color := Colors[e.Level]
 	level := Strings[e.Level]
-	names := e.Fields.Names()
 
 	h.mu.Lock()
 	defer h.mu.Unlock()
 
 	color.Fprintf(h.Writer, "%s %-25s", bold.Sprintf("%*s", h.Padding+1, level), e.Message)
 
-	for _, name := range names {
-		if name == "source" {
+	for _, field := range e.Fields {
+		if field.Name == "source" {
 			continue
 		}
-		fmt.Fprintf(h.Writer, " %s=%v", color.Sprint(name), e.Fields.Get(name))
+		fmt.Fprintf(h.Writer, " %s=%v", color.Sprint(field.Name), field.Value)
 	}
 
 	fmt.Fprintln(h.Writer)

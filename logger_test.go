@@ -51,7 +51,7 @@ func TestLogger_WithFields(t *testing.T) {
 		Level:   log.InfoLevel,
 	}
 
-	ctx := l.WithFields(log.Fields{"file": "sloth.png"})
+	ctx := l.WithFields(log.Fields{{"file", "sloth.png"}})
 	ctx.Debug("uploading")
 	ctx.Info("upload complete")
 
@@ -60,7 +60,7 @@ func TestLogger_WithFields(t *testing.T) {
 	e := h.Entries[0]
 	qt.Assert(t, "upload complete", qt.Equals, e.Message)
 	qt.Assert(t, log.InfoLevel, qt.Equals, e.Level)
-	qt.Assert(t, e.Fields, qt.DeepEquals, log.Fields{"file": "sloth.png"})
+	qt.Assert(t, e.Fields, qt.DeepEquals, log.Fields{{"file", "sloth.png"}})
 }
 
 func TestLogger_WithField(t *testing.T) {
@@ -80,7 +80,7 @@ func TestLogger_WithField(t *testing.T) {
 	e := h.Entries[0]
 	qt.Assert(t, "upload complete", qt.Equals, e.Message)
 	qt.Assert(t, log.InfoLevel, qt.Equals, e.Level)
-	qt.Assert(t, e.Fields, qt.DeepEquals, log.Fields{"file": "sloth.png", "user": "Tobi"})
+	qt.Assert(t, e.Fields, qt.DeepEquals, log.Fields{{"file", "sloth.png"}, {"user", "Tobi"}})
 }
 
 func TestLogger_Trace_info(t *testing.T) {
@@ -102,15 +102,15 @@ func TestLogger_Trace_info(t *testing.T) {
 		e := h.Entries[0]
 		qt.Assert(t, "upload", qt.Equals, e.Message)
 		qt.Assert(t, log.InfoLevel, qt.Equals, e.Level)
-		qt.Assert(t, e.Fields, qt.DeepEquals, log.Fields{"file": "sloth.png"})
+		qt.Assert(t, e.Fields, qt.DeepEquals, log.Fields{{"file", "sloth.png"}})
 	}
 
 	{
 		e := h.Entries[1]
 		qt.Assert(t, "upload", qt.Equals, e.Message)
 		qt.Assert(t, log.InfoLevel, qt.Equals, e.Level)
-		qt.Assert(t, e.Fields["file"], qt.Equals, "sloth.png")
-		qt.Assert(t, e.Fields["duration"], qt.Equals, int64(0))
+		qt.Assert(t, e.Fields[0].Value, qt.Equals, "sloth.png")
+		qt.Assert(t, e.Fields[1].Value, qt.Equals, int64(0))
 	}
 }
 
@@ -133,16 +133,34 @@ func TestLogger_Trace_error(t *testing.T) {
 		e := h.Entries[0]
 		qt.Assert(t, "upload", qt.Equals, e.Message)
 		qt.Assert(t, log.InfoLevel, qt.Equals, e.Level)
-		qt.Assert(t, e.Fields["file"], qt.Equals, "sloth.png")
+		qt.Assert(t, e.Fields, qt.DeepEquals, log.Fields{
+			{
+				Name:  "file",
+				Value: "sloth.png",
+			},
+		})
 	}
 
 	{
 		e := h.Entries[1]
 		qt.Assert(t, "upload", qt.Equals, e.Message)
 		qt.Assert(t, log.ErrorLevel, qt.Equals, e.Level)
-		qt.Assert(t, e.Fields["file"], qt.Equals, "sloth.png")
-		qt.Assert(t, e.Fields["error"], qt.Equals, "boom")
-		qt.Assert(t, e.Fields["duration"], qt.Equals, int64(0))
+		qt.Assert(t, e.Fields, qt.DeepEquals, log.Fields{
+			{
+				Name:  "file",
+				Value: "sloth.png",
+			},
+			{
+				Name:  "duration",
+				Value: int64(0),
+			},
+			{
+				Name:  "error",
+				Value: "boom",
+			},
+		},
+		)
+
 	}
 }
 
@@ -164,15 +182,15 @@ func TestLogger_Trace_nil(t *testing.T) {
 		e := h.Entries[0]
 		qt.Assert(t, "upload", qt.Equals, e.Message)
 		qt.Assert(t, log.InfoLevel, qt.Equals, e.Level)
-		qt.Assert(t, e.Fields, qt.DeepEquals, log.Fields{"file": "sloth.png"})
+		qt.Assert(t, e.Fields, qt.DeepEquals, log.Fields{{"file", "sloth.png"}})
 	}
 
 	{
 		e := h.Entries[1]
 		qt.Assert(t, "upload", qt.Equals, e.Message)
 		qt.Assert(t, log.InfoLevel, qt.Equals, e.Level)
-		qt.Assert(t, e.Fields["file"], qt.Equals, "sloth.png")
-		qt.Assert(t, e.Fields["duration"], qt.Equals, int64(0))
+		qt.Assert(t, e.Fields, qt.DeepEquals, log.Fields{{Name: "file", Value: string("sloth.png")}, {Name: "duration", Value: int64(0)}})
+
 	}
 }
 
@@ -213,9 +231,9 @@ func BenchmarkLogger_medium(b *testing.B) {
 
 	for i := 0; i < b.N; i++ {
 		l.WithFields(log.Fields{
-			"file": "sloth.png",
-			"type": "image/png",
-			"size": 1 << 20,
+			{"file", "sloth.png"},
+			{"type", "image/png"},
+			{"size", 1 << 20},
 		}).Info("upload")
 	}
 }
@@ -230,17 +248,17 @@ func BenchmarkLogger_large(b *testing.B) {
 
 	for i := 0; i < b.N; i++ {
 		l.WithFields(log.Fields{
-			"file": "sloth.png",
-			"type": "image/png",
-			"size": 1 << 20,
+			{"file", "sloth.png"},
+			{"type", "image/png"},
+			{"size", 1 << 20},
 		}).
 			WithFields(log.Fields{
-				"some":     "more",
-				"data":     "here",
-				"whatever": "blah blah",
-				"more":     "stuff",
-				"context":  "such useful",
-				"much":     "fun",
+				{"some", "more"},
+				{"data", "here"},
+				{"whatever", "blah blah"},
+				{"more", "stuff"},
+				{"context", "such useful"},
+				{"much", "fun"},
 			}).
 			WithError(err).Error("upload failed")
 	}
