@@ -10,17 +10,16 @@ import (
 	"github.com/bep/log/handlers/memory"
 )
 
-func Test(t *testing.T) {
+func TestLevel(t *testing.T) {
 	h := memory.New()
+	l := log.NewLogger(
+		log.LoggerConfig{Level: log.ErrorLevel, Handler: level.New(h, log.ErrorLevel)},
+	)
 
-	ctx := log.Logger{
-		Handler: level.New(h, log.ErrorLevel),
-		Level:   log.InfoLevel,
-	}
-
-	ctx.Info("hello")
-	ctx.Info("world")
-	ctx.Error("boom")
+	info := l.WithLevel(log.InfoLevel)
+	info.Log(log.String("hello"))
+	info.Log(log.String("world"))
+	info.WithLevel(log.ErrorLevel).Log(log.String("boom"))
 
 	qt.Assert(t, h.Entries, qt.HasLen, 1)
 	qt.Assert(t, "boom", qt.Equals, h.Entries[0].Message)

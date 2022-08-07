@@ -3,31 +3,27 @@ package log
 import (
 	"encoding/json"
 	"fmt"
-	"os"
 	"strings"
 	"time"
 )
 
 // assert interface compliance.
 var (
-	_ Interface = (*EntryFields)(nil)
-	_ Interface = (*Entry)(nil)
+	_ Logger = (*EntryFields)(nil)
+	_ Logger = (*Entry)(nil)
 )
 
-// Now returns the current time.
-var Now = time.Now
-
-// EntryFields represents a single log entry.
+// EntryFields represents a single log entry at a given log level.
 type EntryFields struct {
-	Logger *Logger `json:"-"`
+	Logger *logger `json:"-"`
 	Fields Fields  `json:"-"`
+	Level  Level   `json:"level"`
 }
 
-// Entry holds a Entry with a Message, Timestamp and a Level.
+// Entry holds a Entry with a Message and a Timestamp.
 // This is what is actually logged.
 type Entry struct {
 	*EntryFields
-	Level     Level     `json:"level"`
 	Timestamp time.Time `json:"timestamp"`
 	Message   string    `json:"message"`
 }
@@ -55,10 +51,16 @@ func (e Entry) MarshalJSON() ([]byte, error) {
 }
 
 // NewEntry returns a new entry for `log`.
-func NewEntry(log *Logger) *EntryFields {
+func NewEntry(log *logger) *EntryFields {
 	return &EntryFields{
 		Logger: log,
 	}
+}
+
+// WithLevel returns a new entry with `level` set.
+func (e EntryFields) WithLevel(level Level) *EntryFields {
+	e.Level = level
+	return &e
 }
 
 // WithFields returns a new entry with `fields` set.
@@ -111,55 +113,9 @@ func (e *EntryFields) WithError(err error) *EntryFields {
 	return ctx
 }
 
-// Debug level message.
-func (e *EntryFields) Debug(msg string) {
-	e.Logger.log(DebugLevel, e, msg)
-}
-
-// Info level message.
-func (e *EntryFields) Info(msg string) {
-	e.Logger.log(InfoLevel, e, msg)
-}
-
-// Warn level message.
-func (e *EntryFields) Warn(msg string) {
-	e.Logger.log(WarnLevel, e, msg)
-}
-
-// Error level message.
-func (e *EntryFields) Error(msg string) {
-	e.Logger.log(ErrorLevel, e, msg)
-}
-
-// Fatal level message, followed by an exit.
-func (e *EntryFields) Fatal(msg string) {
-	e.Logger.log(FatalLevel, e, msg)
-	os.Exit(1)
-}
-
-// Debugf level formatted message.
-func (e *EntryFields) Debugf(msg string, v ...any) {
-	e.Debug(fmt.Sprintf(msg, v...))
-}
-
-// Infof level formatted message.
-func (e *EntryFields) Infof(msg string, v ...any) {
-	e.Info(fmt.Sprintf(msg, v...))
-}
-
-// Warnf level formatted message.
-func (e *EntryFields) Warnf(msg string, v ...any) {
-	e.Warn(fmt.Sprintf(msg, v...))
-}
-
-// Errorf level formatted message.
-func (e *EntryFields) Errorf(msg string, v ...any) {
-	e.Error(fmt.Sprintf(msg, v...))
-}
-
-// Fatalf level formatted message, followed by an exit.
-func (e *EntryFields) Fatalf(msg string, v ...any) {
-	e.Fatal(fmt.Sprintf(msg, v...))
+// Log a message at the given level.
+func (e *EntryFields) Log(s fmt.Stringer) {
+	e.Logger.log(e, s)
 }
 
 // distinctFieldsLastByName returns the fields with duplicate names removed,
@@ -191,11 +147,10 @@ func (e *EntryFields) distinctFieldsLastByName() Fields {
 }
 
 // finalize returns a copy of the Entry with Fields merged.
-func (e *EntryFields) finalize(level Level, msg string) *Entry {
+func (e *EntryFields) finalize(msg string) *Entry {
 	return &Entry{
 		EntryFields: e,
-		Level:       level,
 		Message:     msg,
-		Timestamp:   Now(),
+		Timestamp:   e.Logger.Clock.Now(),
 	}
 }

@@ -9,11 +9,9 @@ import (
 )
 
 func TestEntry_WithFields(t *testing.T) {
-	a := NewEntry(nil)
-	qt.Assert(t, a.Fields, qt.IsNil)
+	a := NewLogger(LoggerConfig{Handler: NoopHandler, Level: InfoLevel}).WithLevel(InfoLevel)
 
 	b := a.WithFields(Fields{{"foo", "bar"}})
-	qt.Assert(t, a.distinctFieldsLastByName(), qt.IsNil)
 
 	c := a.WithFields(Fields{{"foo", "hello"}, {"bar", "world"}})
 	d := c.WithFields(Fields{{"baz", "jazz"}})
@@ -21,7 +19,7 @@ func TestEntry_WithFields(t *testing.T) {
 	qt.Assert(t, c.distinctFieldsLastByName(), qt.DeepEquals, Fields{{"foo", "hello"}, {"bar", "world"}})
 	qt.Assert(t, d.distinctFieldsLastByName(), qt.DeepEquals, Fields{{"foo", "hello"}, {"bar", "world"}, {"baz", "jazz"}})
 
-	e := c.finalize(InfoLevel, "upload")
+	e := c.finalize("upload")
 	qt.Assert(t, "upload", qt.Equals, e.Message)
 	qt.Assert(t, Fields{{"foo", "hello"}, {"bar", "world"}}, qt.DeepEquals, e.Fields)
 	qt.Assert(t, InfoLevel, qt.Equals, e.Level)

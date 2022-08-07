@@ -10,3 +10,4 @@ Main changes:
 * Trim unneeded dependencies.
 * Make `Fields` into a slice to preserve log order.
 * Split `Entry` into `Entry` and `EntryFields`. This is easier to reason about and more effective.
+* Rework the logger interface to allow lazy creation of messages, e.g. `Info(fmt.Stringer)`.

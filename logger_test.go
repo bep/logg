@@ -2,23 +2,20 @@ package log_test
 
 import (
 	"fmt"
+	"strings"
 	"testing"
 
 	"github.com/bep/log"
-	"github.com/bep/log/handlers/discard"
 	"github.com/bep/log/handlers/memory"
 	qt "github.com/frankban/quicktest"
 )
 
 func TestLogger_printf(t *testing.T) {
 	h := memory.New()
+	l := log.NewLogger(log.LoggerConfig{Level: log.InfoLevel, Handler: h})
+	a := l.WithLevel(log.InfoLevel)
 
-	l := &log.Logger{
-		Handler: h,
-		Level:   log.InfoLevel,
-	}
-
-	l.Infof("logged in %s", "Tobi")
+	a.Log(log.String("logged in Tobi"))
 
 	e := h.Entries[0]
 	qt.Assert(t, "logged in Tobi", qt.Equals, e.Message)
@@ -27,14 +24,10 @@ func TestLogger_printf(t *testing.T) {
 
 func TestLogger_levels(t *testing.T) {
 	h := memory.New()
+	l := log.NewLogger(log.LoggerConfig{Level: log.InfoLevel, Handler: h})
 
-	l := &log.Logger{
-		Handler: h,
-		Level:   log.InfoLevel,
-	}
-
-	l.Debug("uploading")
-	l.Info("upload complete")
+	l.WithLevel(log.DebugLevel).Log(log.String("uploading"))
+	l.WithLevel(log.InfoLevel).Log(log.String("upload complete"))
 
 	qt.Assert(t, len(h.Entries), qt.Equals, 1)
 
@@ -45,15 +38,11 @@ func TestLogger_levels(t *testing.T) {
 
 func TestLogger_WithFields(t *testing.T) {
 	h := memory.New()
+	l := log.NewLogger(log.LoggerConfig{Level: log.InfoLevel, Handler: h})
 
-	l := &log.Logger{
-		Handler: h,
-		Level:   log.InfoLevel,
-	}
-
-	ctx := l.WithFields(log.Fields{{"file", "sloth.png"}})
-	ctx.Debug("uploading")
-	ctx.Info("upload complete")
+	info := l.WithLevel(log.InfoLevel).WithFields(log.Fields{{"file", "sloth.png"}})
+	info.WithLevel(log.DebugLevel).Log(log.String("uploading"))
+	info.Log(log.String("upload complete"))
 
 	qt.Assert(t, len(h.Entries), qt.Equals, 1)
 
@@ -65,15 +54,11 @@ func TestLogger_WithFields(t *testing.T) {
 
 func TestLogger_WithField(t *testing.T) {
 	h := memory.New()
+	l := log.NewLogger(log.LoggerConfig{Level: log.InfoLevel, Handler: h})
 
-	l := &log.Logger{
-		Handler: h,
-		Level:   log.InfoLevel,
-	}
-
-	ctx := l.WithField("file", "sloth.png").WithField("user", "Tobi")
-	ctx.Debug("uploading")
-	ctx.Info("upload complete")
+	info := l.WithLevel(log.InfoLevel).WithField("file", "sloth.png").WithField("user", "Tobi")
+	info.WithLevel(log.DebugLevel).Log(log.String("uploading"))
+	info.Log(log.String("upload complete"))
 
 	qt.Assert(t, len(h.Entries), qt.Equals, 1)
 
@@ -88,13 +73,10 @@ func TestLogger_HandlerFunc(t *testing.T) {
 	f := func(e *log.Entry) error {
 		return h.HandleLog(e)
 	}
+	l := log.NewLogger(log.LoggerConfig{Level: log.InfoLevel, Handler: log.HandlerFunc(f)})
+	info := l.WithLevel(log.InfoLevel)
 
-	l := &log.Logger{
-		Handler: log.HandlerFunc(f),
-		Level:   log.InfoLevel,
-	}
-
-	l.Infof("logged in %s", "Tobi")
+	info.Log(log.String("logged in Tobi"))
 
 	e := h.Entries[0]
 	qt.Assert(t, "logged in Tobi", qt.Equals, e.Message)
@@ -102,41 +84,35 @@ func TestLogger_HandlerFunc(t *testing.T) {
 }
 
 func BenchmarkLogger_small(b *testing.B) {
-	l := &log.Logger{
-		Handler: discard.New(),
-		Level:   log.InfoLevel,
-	}
+	l := log.NewLogger(log.LoggerConfig{Level: log.InfoLevel, Handler: log.NoopHandler})
+	info := l.WithLevel(log.InfoLevel)
 
 	for i := 0; i < b.N; i++ {
-		l.Info("login")
+		info.Log(log.String("login"))
 	}
 }
 
 func BenchmarkLogger_medium(b *testing.B) {
-	l := &log.Logger{
-		Handler: discard.New(),
-		Level:   log.InfoLevel,
-	}
+	l := log.NewLogger(log.LoggerConfig{Level: log.InfoLevel, Handler: log.NoopHandler})
+	info := l.WithLevel(log.InfoLevel)
 
 	for i := 0; i < b.N; i++ {
-		l.WithFields(log.Fields{
+		info.WithFields(log.Fields{
 			{"file", "sloth.png"},
 			{"type", "image/png"},
 			{"size", 1 << 20},
-		}).Info("upload")
+		}).Log(log.String("upload"))
 	}
 }
 
 func BenchmarkLogger_large(b *testing.B) {
-	l := &log.Logger{
-		Handler: discard.New(),
-		Level:   log.InfoLevel,
-	}
+	l := log.NewLogger(log.LoggerConfig{Level: log.InfoLevel, Handler: log.NoopHandler})
+	info := l.WithLevel(log.InfoLevel)
 
 	err := fmt.Errorf("boom")
 
 	for i := 0; i < b.N; i++ {
-		l.WithFields(log.Fields{
+		info.WithFields(log.Fields{
 			{"file", "sloth.png"},
 			{"type", "image/png"},
 			{"size", 1 << 20},
@@ -149,6 +125,78 @@ func BenchmarkLogger_large(b *testing.B) {
 				{"context", "such useful"},
 				{"much", "fun"},
 			}).
-			WithError(err).Error("upload failed")
+			WithError(err).Log(log.String("upload failed"))
 	}
+}
+
+func BenchmarkLogger_levels(b *testing.B) {
+	doWork := func(l log.Logger) {
+		for i := 0; i < 10; i++ {
+			l.Log(log.NewStringFunc(
+				func() string {
+					return fmt.Sprintf("loging value %s and %s.", "value1", strings.Repeat("value2", i+1))
+				},
+			))
+		}
+	}
+
+	b.Run("level not met", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			l := log.NewLogger(log.LoggerConfig{Level: log.ErrorLevel, Handler: log.NoopHandler})
+			error := l.WithLevel(log.InfoLevel)
+			doWork(error)
+		}
+	})
+
+	b.Run("level not met, one field", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			l := log.NewLogger(log.LoggerConfig{Level: log.ErrorLevel, Handler: log.NoopHandler})
+			info := l.WithLevel(log.InfoLevel)
+			info = info.WithField("file", "sloth.png")
+			doWork(info)
+		}
+	})
+
+	b.Run("level not met, many fields", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			l := log.NewLogger(log.LoggerConfig{Level: log.ErrorLevel, Handler: log.NoopHandler})
+			info := l.WithLevel(log.InfoLevel)
+			info = info.WithField("file", "sloth.png")
+			for i := 0; i < 32; i++ {
+				info = info.WithField(fmt.Sprintf("field%d", i), "value")
+			}
+			doWork(info)
+		}
+	})
+
+	b.Run("level met", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			l := log.NewLogger(log.LoggerConfig{Level: log.InfoLevel, Handler: log.NoopHandler})
+			info := l.WithLevel(log.InfoLevel)
+			for j := 0; j < 10; j++ {
+				doWork(info)
+			}
+		}
+	})
+
+	b.Run("level met, one field", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			l := log.NewLogger(log.LoggerConfig{Level: log.InfoLevel, Handler: log.NoopHandler})
+			info := l.WithLevel(log.InfoLevel)
+			info = info.WithField("file", "sloth.png")
+			doWork(info)
+		}
+	})
+
+	b.Run("level met, many fields", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			l := log.NewLogger(log.LoggerConfig{Level: log.InfoLevel, Handler: log.NoopHandler})
+			info := l.WithLevel(log.InfoLevel)
+			info = info.WithField("file", "sloth.png")
+			for i := 0; i < 32; i++ {
+				info = info.WithField(fmt.Sprintf("field%d", i), "value")
+			}
+			doWork(info)
+		}
+	})
 }

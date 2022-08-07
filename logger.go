@@ -1,12 +1,38 @@
 package log
 
 import (
+	"fmt"
 	stdlog "log"
+	"os"
 	"time"
+
+	"github.com/bep/clocks"
 )
 
 // assert interface compliance.
-var _ Interface = (*Logger)(nil)
+var _ Leveler = (*logger)(nil)
+
+// String implements fmt.Stringer and can be used directly in
+// the log methods.
+type String string
+
+// StringFunc is a function that returns a string.
+// It also implements the fmt.Stringer interface and
+// can therefore be used as argument to the log methods.
+type StringFunc func() string
+
+func (f StringFunc) String() string {
+	return f()
+}
+
+// NewStringFunc returns a StringFunc which implements Stringer.
+func NewStringFunc(f func() string) StringFunc {
+	return StringFunc(f)
+}
+
+func (s String) String() string {
+	return string(s)
+}
 
 // Fielder is an interface for providing fields to custom types.
 type Fielder interface {
@@ -46,14 +72,69 @@ type Handler interface {
 	HandleLog(*Entry) error
 }
 
-// Logger represents a logger with configurable Level and Handler.
-type Logger struct {
+// NoopHandler is a no-op handler that discards all log messages.
+var NoopHandler = HandlerFunc(func(e *Entry) error {
+	return nil
+})
+
+// LoggerConfig is the configuration used to create a logger.
+type LoggerConfig struct {
+	// Level is the minimum level to log at.
+	// If not set, defaults to InfoLevel.
+	Level Level
+
+	// Handler is the log handler to use.
+	Handler Handler
+
+	// Clock is the clock to use for timestamps.
+	// If not set, the system clock is used.
+	Clock Clock
+}
+
+// New returns a new logger.
+func NewLogger(cfg LoggerConfig) Leveler {
+	if cfg.Handler == nil {
+		panic("handler cannot be nil")
+	}
+
+	if cfg.Level <= 0 || cfg.Level > FatalLevel {
+		panic("log level is out of range")
+	}
+
+	if cfg.Clock == nil {
+		cfg.Clock = clocks.System()
+	}
+
+	if cfg.Level == 0 {
+		cfg.Level = InfoLevel
+	}
+
+	return &logger{
+		Handler: cfg.Handler,
+		Level:   cfg.Level,
+		Clock:   cfg.Clock,
+	}
+}
+
+// logger represents a logger with configurable Level and Handler.
+type logger struct {
 	Handler Handler
 	Level   Level
+	Clock   Clock
+}
+
+// Clock provides the current time.
+type Clock interface {
+	Now() time.Time
+}
+
+// WithLevel returns a new entry with `level` set.
+func (l *logger) WithLevel(level Level) *EntryFields {
+	return NewEntry(l).WithLevel(level)
 }
 
 // WithFields returns a new entry with `fields` set.
-func (l *Logger) WithFields(fields Fielder) *EntryFields {
+func (l *logger) WithFields(fields Fielder) *EntryFields {
 	return NewEntry(l).WithFields(fields.Fields())
 }
 
@@ -61,80 +142,34 @@ func (l *Logger) WithFields(fields Fielder) *EntryFields {
 //
 // Note that the `key` should not have spaces in it - use camel
 // case or underscores
-func (l *Logger) WithField(key string, value any) *EntryFields {
+func (l *logger) WithField(key string, value any) *EntryFields {
 	return NewEntry(l).WithField(key, value)
 }
 
 // WithDuration returns a new entry with the "duration" field set
 // to the given duration in milliseconds.
-func (l *Logger) WithDuration(d time.Duration) *EntryFields {
+func (l *logger) WithDuration(d time.Duration) *EntryFields {
 	return NewEntry(l).WithDuration(d)
 }
 
 // WithError returns a new entry with the "error" set to `err`.
-func (l *Logger) WithError(err error) *EntryFields {
+func (l *logger) WithError(err error) *EntryFields {
 	return NewEntry(l).WithError(err)
-}
-
-// Debug level message.
-func (l *Logger) Debug(msg string) {
-	NewEntry(l).Debug(msg)
-}
-
-// Info level message.
-func (l *Logger) Info(msg string) {
-	NewEntry(l).Info(msg)
-}
-
-// Warn level message.
-func (l *Logger) Warn(msg string) {
-	NewEntry(l).Warn(msg)
-}
-
-// Error level message.
-func (l *Logger) Error(msg string) {
-	NewEntry(l).Error(msg)
-}
-
-// Fatal level message, followed by an exit.
-func (l *Logger) Fatal(msg string) {
-	NewEntry(l).Fatal(msg)
-}
-
-// Debugf level formatted message.
-func (l *Logger) Debugf(msg string, v ...any) {
-	NewEntry(l).Debugf(msg, v...)
-}
-
-// Infof level formatted message.
-func (l *Logger) Infof(msg string, v ...any) {
-	NewEntry(l).Infof(msg, v...)
-}
-
-// Warnf level formatted message.
-func (l *Logger) Warnf(msg string, v ...any) {
-	NewEntry(l).Warnf(msg, v...)
-}
-
-// Errorf level formatted message.
-func (l *Logger) Errorf(msg string, v ...any) {
-	NewEntry(l).Errorf(msg, v...)
-}
-
-// Fatalf level formatted message, followed by an exit.
-func (l *Logger) Fatalf(msg string, v ...any) {
-	NewEntry(l).Fatalf(msg, v...)
 }
 
 // log the message, invoking the handler. We clone the entry here
 // to bypass the overhead in Entry methods when the level is not
 // met.
-func (l *Logger) log(level Level, e *EntryFields, msg string) {
-	if level < l.Level {
+func (l *logger) log(e *EntryFields, s fmt.Stringer) {
+	if e.Level < l.Level {
 		return
 	}
 
-	if err := l.Handler.HandleLog(e.finalize(level, msg)); err != nil {
+	if err := l.Handler.HandleLog(e.finalize(s.String())); err != nil {
 		stdlog.Printf("error logging: %s", err)
+	}
+
+	if e.Level == FatalLevel {
+		os.Exit(1)
 	}
 }
