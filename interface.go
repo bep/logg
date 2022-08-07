@@ -1,21 +1,19 @@
 package log
 
-import "time"
+import (
+	"fmt"
+	"time"
+)
 
-// Interface represents the API of both Logger and Entry.
-type Interface interface {
+type Leveler interface {
+	WithLevel(Level) *EntryFields
+}
+
+type Logger interface {
+	Log(fmt.Stringer)
+	Leveler
 	WithFields(Fielder) *EntryFields
 	WithField(string, any) *EntryFields
 	WithDuration(time.Duration) *EntryFields
 	WithError(error) *EntryFields
-	Debug(string)
-	Info(string)
-	Warn(string)
-	Error(string)
-	Fatal(string)
-	Debugf(string, ...any)
-	Infof(string, ...any)
-	Warnf(string, ...any)
-	Errorf(string, ...any)
-	Fatalf(string, ...any)
 }

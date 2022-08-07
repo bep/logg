@@ -3,6 +3,7 @@ module github.com/bep/log
 go 1.18
 
 require (
+	github.com/bep/clocks v0.5.0
 	github.com/fatih/color v1.13.0
 	github.com/frankban/quicktest v1.14.3
 	github.com/mattn/go-colorable v0.1.12

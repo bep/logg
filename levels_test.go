@@ -38,9 +38,10 @@ func TestParseLevel(t *testing.T) {
 
 func TestLevel_MarshalJSON(t *testing.T) {
 	e := Entry{
-		Level:       InfoLevel,
-		Message:     "hello",
-		EntryFields: &EntryFields{},
+		Message: "hello",
+		EntryFields: &EntryFields{
+			Level: InfoLevel,
+		},
 	}
 
 	expect := `{"fields":{},"level":"info","timestamp":"0001-01-01T00:00:00Z","message":"hello"}`
