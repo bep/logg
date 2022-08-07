@@ -18,22 +18,26 @@ var Now = time.Now
 type EntryFields struct {
 	Logger *Logger `json:"-"`
 	Fields Fields  `json:"-"`
-	start  time.Time
 }
 
 // Entry holds a Entry with a Message, Timestamp and a Level.
 // This is what is actually logged.
 type Entry struct {
 	*EntryFields
-	FieldsUnique Fields    `json:"-"`
-	Level        Level     `json:"level"`
-	Timestamp    time.Time `json:"timestamp"`
-	Message      string    `json:"message"`
+	Level     Level     `json:"level"`
+	Timestamp time.Time `json:"timestamp"`
+	Message   string    `json:"message"`
+}
+
+// FieldsDistinct returns a list of fields with duplicate names removed,
+// keeping the last.
+func (e *EntryFields) FieldsDistinct() Fields {
+	return e.distinctFieldsLastByName()
 }
 
 func (e Entry) MarshalJSON() ([]byte, error) {
 	fields := make(map[string]any)
-	for _, f := range e.FieldsUnique {
+	for _, f := range e.FieldsDistinct() {
 		fields[f.Name] = f.Value
 	}
 
@@ -155,8 +159,9 @@ func (e *EntryFields) Fatalf(msg string, v ...any) {
 	e.Fatal(fmt.Sprintf(msg, v...))
 }
 
-// mergedFields returns the fields list collapsed into a single slice.
-func (e *EntryFields) mergedFields() Fields {
+// distinctFieldsLastByName returns the fields with duplicate names removed,
+// keeping the rightmost field (last) with a given name.
+func (e *EntryFields) distinctFieldsLastByName() Fields {
 	fields := make(Fields, 0, len(e.Fields))
 	for i := len(e.Fields) - 1; i >= 0; i-- {
 		f := e.Fields[i]
@@ -168,7 +173,10 @@ func (e *EntryFields) mergedFields() Fields {
 			}
 		}
 		if !seen {
-			fields = append(fields, f)
+			// Insert first.
+			fields = append(fields, Field{})
+			copy(fields[1:], fields[:])
+			fields[0] = f
 		}
 	}
 
@@ -182,10 +190,9 @@ func (e *EntryFields) mergedFields() Fields {
 // finalize returns a copy of the Entry with Fields merged.
 func (e *EntryFields) finalize(level Level, msg string) *Entry {
 	return &Entry{
-		EntryFields:  e,
-		FieldsUnique: e.mergedFields(),
-		Level:        level,
-		Message:      msg,
-		Timestamp:    Now(),
+		EntryFields: e,
+		Level:       level,
+		Message:     msg,
+		Timestamp:   Now(),
 	}
 }
