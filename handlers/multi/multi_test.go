@@ -4,11 +4,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/stretchr/testify/assert"
-
 	"github.com/bep/log"
 	"github.com/bep/log/handlers/memory"
 	"github.com/bep/log/handlers/multi"
+	qt "github.com/frankban/quicktest"
 )
 
 func init() {
@@ -26,6 +25,6 @@ func Test(t *testing.T) {
 	log.Info("world")
 	log.Error("boom")
 
-	assert.Len(t, a.Entries, 3)
-	assert.Len(t, b.Entries, 3)
+	qt.Assert(t, a.Entries, qt.HasLen, 3)
+	qt.Assert(t, b.Entries, qt.HasLen, 3)
 }

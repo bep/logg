@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
+	qt "github.com/frankban/quicktest"
 )
 
 func TestParseLevel(t *testing.T) {
@@ -24,15 +24,15 @@ func TestParseLevel(t *testing.T) {
 	for _, c := range cases {
 		t.Run(c.String, func(t *testing.T) {
 			l, err := ParseLevel(c.String)
-			assert.NoError(t, err, "parse")
-			assert.Equal(t, c.Level, l)
+			qt.Assert(t, err, qt.IsNil, qt.Commentf("parse"))
+			qt.Assert(t, l, qt.Equals, c.Level)
 		})
 	}
 
 	t.Run("invalid", func(t *testing.T) {
 		l, err := ParseLevel("something")
-		assert.Equal(t, ErrInvalidLevel, err)
-		assert.Equal(t, InvalidLevel, l)
+		qt.Assert(t, err, qt.Equals, ErrInvalidLevel)
+		qt.Assert(t, l, qt.Equals, InvalidLevel)
 	})
 }
 
@@ -46,8 +46,8 @@ func TestLevel_MarshalJSON(t *testing.T) {
 	expect := `{"fields":{},"level":"info","timestamp":"0001-01-01T00:00:00Z","message":"hello"}`
 
 	b, err := json.Marshal(e)
-	assert.NoError(t, err)
-	assert.Equal(t, expect, string(b))
+	qt.Assert(t, err, qt.IsNil)
+	qt.Assert(t, string(b), qt.Equals, expect)
 }
 
 func TestLevel_UnmarshalJSON(t *testing.T) {
@@ -55,6 +55,6 @@ func TestLevel_UnmarshalJSON(t *testing.T) {
 	e := new(Entry)
 
 	err := json.Unmarshal([]byte(s), e)
-	assert.NoError(t, err)
-	assert.Equal(t, InfoLevel, e.Level)
+	qt.Assert(t, err, qt.IsNil)
+	qt.Assert(t, e.Level, qt.Equals, InfoLevel)
 }

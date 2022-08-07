@@ -3,7 +3,7 @@ package level_test
 import (
 	"testing"
 
-	"github.com/stretchr/testify/assert"
+	qt "github.com/frankban/quicktest"
 
 	"github.com/bep/log"
 	"github.com/bep/log/handlers/level"
@@ -22,6 +22,6 @@ func Test(t *testing.T) {
 	ctx.Info("world")
 	ctx.Error("boom")
 
-	assert.Len(t, h.Entries, 1)
-	assert.Equal(t, h.Entries[0].Message, "boom")
+	qt.Assert(t, h.Entries, qt.HasLen, 1)
+	qt.Assert(t, "boom", qt.Equals, h.Entries[0].Message)
 }

@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/stretchr/testify/assert"
+	qt "github.com/frankban/quicktest"
 
 	"github.com/bep/log"
 	"github.com/bep/log/handlers/text"
@@ -27,5 +27,5 @@ func Test(t *testing.T) {
 
 	expected := "\x1b[34m  INFO\x1b[0m[0000] hello                     \x1b[34mid\x1b[0m=123 \x1b[34muser\x1b[0m=tj\n\x1b[34m  INFO\x1b[0m[0000] world                     \x1b[34muser\x1b[0m=tj\n\x1b[31m ERROR\x1b[0m[0000] boom                      \x1b[31muser\x1b[0m=tj\n"
 
-	assert.Equal(t, expected, buf.String())
+	qt.Assert(t, buf.String(), qt.Equals, expected)
 }

@@ -5,61 +5,64 @@ import (
 	"testing"
 	"time"
 
-	"github.com/stretchr/testify/assert"
+	qt "github.com/frankban/quicktest"
 )
 
 func TestEntry_WithFields(t *testing.T) {
 	a := NewEntry(nil)
-	assert.Nil(t, a.Fields)
+	qt.Assert(t, a.Fields, qt.IsNil)
 
 	b := a.WithFields(Fields{"foo": "bar"})
-	assert.Equal(t, Fields{}, a.mergedFields())
-	assert.Equal(t, Fields{"foo": "bar"}, b.mergedFields())
+	qt.Assert(t, a.mergedFields(), qt.DeepEquals, Fields{})
+	qt.Assert(t, b.mergedFields(), qt.DeepEquals, Fields{"foo": "bar"})
 
 	c := a.WithFields(Fields{"foo": "hello", "bar": "world"})
 
 	e := c.finalize(InfoLevel, "upload")
-	assert.Equal(t, e.Message, "upload")
-	assert.Equal(t, e.Fields, Fields{"foo": "hello", "bar": "world"})
-	assert.Equal(t, e.Level, InfoLevel)
-	assert.NotEmpty(t, e.Timestamp)
+	qt.Assert(t, "upload", qt.Equals, e.Message)
+	qt.Assert(t, Fields{"foo": "hello", "bar": "world"}, qt.DeepEquals, e.Fields)
+	qt.Assert(t, InfoLevel, qt.Equals, e.Level)
+	qt.Assert(t, time.Now().IsZero(), qt.IsFalse)
 }
 
 func TestEntry_WithField(t *testing.T) {
 	a := NewEntry(nil)
 	b := a.WithField("foo", "bar")
-	assert.Equal(t, Fields{}, a.mergedFields())
-	assert.Equal(t, Fields{"foo": "bar"}, b.mergedFields())
+	qt.Assert(t, a.mergedFields(), qt.DeepEquals, Fields{})
+	qt.Assert(t, b.mergedFields(), qt.DeepEquals, Fields{"foo": "bar"})
 }
 
 func TestEntry_WithError(t *testing.T) {
 	a := NewEntry(nil)
 	b := a.WithError(fmt.Errorf("boom"))
-	assert.Equal(t, Fields{}, a.mergedFields())
-	assert.Equal(t, Fields{"error": "boom"}, b.mergedFields())
+	qt.Assert(t, a.mergedFields(), qt.DeepEquals, Fields{})
+	qt.Assert(t, b.mergedFields(), qt.DeepEquals, Fields{"error": "boom"})
 }
 
 func TestEntry_WithError_fields(t *testing.T) {
 	a := NewEntry(nil)
 	b := a.WithError(errFields("boom"))
-	assert.Equal(t, Fields{}, a.mergedFields())
-	assert.Equal(t, Fields{
-		"error":  "boom",
-		"reason": "timeout",
-	}, b.mergedFields())
+	qt.Assert(t, a.mergedFields(), qt.DeepEquals, Fields{})
+	qt.Assert(t,
+
+		b.mergedFields(), qt.DeepEquals, Fields{
+			"error":  "boom",
+			"reason": "timeout",
+		})
+
 }
 
 func TestEntry_WithError_nil(t *testing.T) {
 	a := NewEntry(nil)
 	b := a.WithError(nil)
-	assert.Equal(t, Fields{}, a.mergedFields())
-	assert.Equal(t, Fields{}, b.mergedFields())
+	qt.Assert(t, a.mergedFields(), qt.DeepEquals, Fields{})
+	qt.Assert(t, b.mergedFields(), qt.DeepEquals, Fields{})
 }
 
 func TestEntry_WithDuration(t *testing.T) {
 	a := NewEntry(nil)
 	b := a.WithDuration(time.Second * 2)
-	assert.Equal(t, Fields{"duration": int64(2000)}, b.mergedFields())
+	qt.Assert(t, b.mergedFields(), qt.DeepEquals, Fields{"duration": int64(2000)})
 }
 
 type errFields string

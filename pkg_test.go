@@ -4,9 +4,10 @@ import (
 	"errors"
 	"testing"
 
+	qt "github.com/frankban/quicktest"
+
 	"github.com/bep/log"
 	"github.com/bep/log/handlers/memory"
-	"github.com/stretchr/testify/assert"
 )
 
 type Pet struct {
@@ -28,8 +29,8 @@ func TestInfo(t *testing.T) {
 	log.Infof("logged in %s", "Tobi")
 
 	e := h.Entries[0]
-	assert.Equal(t, e.Message, "logged in Tobi")
-	assert.Equal(t, e.Level, log.InfoLevel)
+	qt.Assert(t, "logged in Tobi", qt.Equals, e.Message)
+	qt.Assert(t, log.InfoLevel, qt.Equals, e.Level)
 }
 
 func TestFielder(t *testing.T) {
@@ -40,7 +41,7 @@ func TestFielder(t *testing.T) {
 	log.WithFields(pet).Info("add pet")
 
 	e := h.Entries[0]
-	assert.Equal(t, log.Fields{"name": "Tobi", "age": 3}, e.Fields)
+	qt.Assert(t, e.Fields, qt.DeepEquals, log.Fields{"name": "Tobi", "age": 3})
 }
 
 // Unstructured logging is supported, but not recommended since it is hard to query.

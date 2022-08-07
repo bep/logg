@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/stretchr/testify/assert"
+	qt "github.com/frankban/quicktest"
 
 	"github.com/bep/log"
 	"github.com/bep/log/handlers/json"
@@ -30,5 +30,5 @@ func Test(t *testing.T) {
 {"fields":{},"level":"error","timestamp":"1970-01-01T00:00:00Z","message":"boom"}
 `
 
-	assert.Equal(t, expected, buf.String())
+	qt.Assert(t, buf.String(), qt.Equals, expected)
 }
