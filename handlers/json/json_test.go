@@ -21,9 +21,9 @@ func Test(t *testing.T) {
 	var buf bytes.Buffer
 
 	log.SetHandler(json.New(&buf))
-	log.WithField("user", "tj").WithField("id", "123").Info("hello")
-	log.Info("world")
-	log.Error("boom")
+	log.WithField("user", "tj").WithField("id", "123").Info(log.String("hello"))
+	log.Info(log.String("world"))
+	log.Error(log.String("boom"))
 
 	expected := `{"fields":{"id":"123","user":"tj"},"level":"info","timestamp":"1970-01-01T00:00:00Z","message":"hello"}
 {"fields":{},"level":"info","timestamp":"1970-01-01T00:00:00Z","message":"world"}

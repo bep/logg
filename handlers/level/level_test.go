@@ -18,9 +18,9 @@ func Test(t *testing.T) {
 		Level:   log.InfoLevel,
 	}
 
-	ctx.Info("hello")
-	ctx.Info("world")
-	ctx.Error("boom")
+	ctx.Info(log.String("hello"))
+	ctx.Info(log.String("world"))
+	ctx.Error(log.String("boom"))
 
 	qt.Assert(t, h.Entries, qt.HasLen, 1)
 	qt.Assert(t, "boom", qt.Equals, h.Entries[0].Message)

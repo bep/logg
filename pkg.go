@@ -1,6 +1,9 @@
 package log
 
-import "time"
+import (
+	"fmt"
+	"time"
+)
 
 // singletons ftw?
 var Log Interface = &Logger{
@@ -52,51 +55,26 @@ func WithError(err error) *EntryFields {
 }
 
 // Debug level message.
-func Debug(msg string) {
-	Log.Debug(msg)
+func Debug(s fmt.Stringer) {
+	Log.Debug(s)
 }
 
 // Info level message.
-func Info(msg string) {
-	Log.Info(msg)
+func Info(s fmt.Stringer) {
+	Log.Info(s)
 }
 
 // Warn level message.
-func Warn(msg string) {
-	Log.Warn(msg)
+func Warn(s fmt.Stringer) {
+	Log.Warn(s)
 }
 
 // Error level message.
-func Error(msg string) {
-	Log.Error(msg)
+func Error(s fmt.Stringer) {
+	Log.Error(s)
 }
 
 // Fatal level message, followed by an exit.
-func Fatal(msg string) {
-	Log.Fatal(msg)
-}
-
-// Debugf level formatted message.
-func Debugf(msg string, v ...any) {
-	Log.Debugf(msg, v...)
-}
-
-// Infof level formatted message.
-func Infof(msg string, v ...any) {
-	Log.Infof(msg, v...)
-}
-
-// Warnf level formatted message.
-func Warnf(msg string, v ...any) {
-	Log.Warnf(msg, v...)
-}
-
-// Errorf level formatted message.
-func Errorf(msg string, v ...any) {
-	Log.Errorf(msg, v...)
-}
-
-// Fatalf level formatted message, followed by an exit.
-func Fatalf(msg string, v ...any) {
-	Log.Fatalf(msg, v...)
+func Fatal(s fmt.Stringer) {
+	Log.Fatal(s)
 }

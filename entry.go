@@ -112,54 +112,29 @@ func (e *EntryFields) WithError(err error) *EntryFields {
 }
 
 // Debug level message.
-func (e *EntryFields) Debug(msg string) {
-	e.Logger.log(DebugLevel, e, msg)
+func (e *EntryFields) Debug(s fmt.Stringer) {
+	e.Logger.log(DebugLevel, e, s)
 }
 
 // Info level message.
-func (e *EntryFields) Info(msg string) {
-	e.Logger.log(InfoLevel, e, msg)
+func (e *EntryFields) Info(s fmt.Stringer) {
+	e.Logger.log(InfoLevel, e, s)
 }
 
 // Warn level message.
-func (e *EntryFields) Warn(msg string) {
-	e.Logger.log(WarnLevel, e, msg)
+func (e *EntryFields) Warn(s fmt.Stringer) {
+	e.Logger.log(WarnLevel, e, s)
 }
 
 // Error level message.
-func (e *EntryFields) Error(msg string) {
-	e.Logger.log(ErrorLevel, e, msg)
+func (e *EntryFields) Error(s fmt.Stringer) {
+	e.Logger.log(ErrorLevel, e, s)
 }
 
 // Fatal level message, followed by an exit.
-func (e *EntryFields) Fatal(msg string) {
-	e.Logger.log(FatalLevel, e, msg)
+func (e *EntryFields) Fatal(s fmt.Stringer) {
+	e.Logger.log(FatalLevel, e, s)
 	os.Exit(1)
-}
-
-// Debugf level formatted message.
-func (e *EntryFields) Debugf(msg string, v ...any) {
-	e.Debug(fmt.Sprintf(msg, v...))
-}
-
-// Infof level formatted message.
-func (e *EntryFields) Infof(msg string, v ...any) {
-	e.Info(fmt.Sprintf(msg, v...))
-}
-
-// Warnf level formatted message.
-func (e *EntryFields) Warnf(msg string, v ...any) {
-	e.Warn(fmt.Sprintf(msg, v...))
-}
-
-// Errorf level formatted message.
-func (e *EntryFields) Errorf(msg string, v ...any) {
-	e.Error(fmt.Sprintf(msg, v...))
-}
-
-// Fatalf level formatted message, followed by an exit.
-func (e *EntryFields) Fatalf(msg string, v ...any) {
-	e.Fatal(fmt.Sprintf(msg, v...))
 }
 
 // distinctFieldsLastByName returns the fields with duplicate names removed,

@@ -2,6 +2,7 @@ package log_test
 
 import (
 	"fmt"
+	"strings"
 	"testing"
 
 	"github.com/bep/log"
@@ -18,7 +19,7 @@ func TestLogger_printf(t *testing.T) {
 		Level:   log.InfoLevel,
 	}
 
-	l.Infof("logged in %s", "Tobi")
+	l.Info(log.String("logged in Tobi"))
 
 	e := h.Entries[0]
 	qt.Assert(t, "logged in Tobi", qt.Equals, e.Message)
@@ -33,8 +34,8 @@ func TestLogger_levels(t *testing.T) {
 		Level:   log.InfoLevel,
 	}
 
-	l.Debug("uploading")
-	l.Info("upload complete")
+	l.Debug(log.String("uploading"))
+	l.Info(log.String("upload complete"))
 
 	qt.Assert(t, len(h.Entries), qt.Equals, 1)
 
@@ -52,8 +53,8 @@ func TestLogger_WithFields(t *testing.T) {
 	}
 
 	ctx := l.WithFields(log.Fields{{"file", "sloth.png"}})
-	ctx.Debug("uploading")
-	ctx.Info("upload complete")
+	ctx.Debug(log.String("uploading"))
+	ctx.Info(log.String("upload complete"))
 
 	qt.Assert(t, len(h.Entries), qt.Equals, 1)
 
@@ -72,8 +73,8 @@ func TestLogger_WithField(t *testing.T) {
 	}
 
 	ctx := l.WithField("file", "sloth.png").WithField("user", "Tobi")
-	ctx.Debug("uploading")
-	ctx.Info("upload complete")
+	ctx.Debug(log.String("uploading"))
+	ctx.Info(log.String("upload complete"))
 
 	qt.Assert(t, len(h.Entries), qt.Equals, 1)
 
@@ -94,7 +95,7 @@ func TestLogger_HandlerFunc(t *testing.T) {
 		Level:   log.InfoLevel,
 	}
 
-	l.Infof("logged in %s", "Tobi")
+	l.Info(log.String("logged in Tobi"))
 
 	e := h.Entries[0]
 	qt.Assert(t, "logged in Tobi", qt.Equals, e.Message)
@@ -108,7 +109,7 @@ func BenchmarkLogger_small(b *testing.B) {
 	}
 
 	for i := 0; i < b.N; i++ {
-		l.Info("login")
+		l.Info(log.String("login"))
 	}
 }
 
@@ -123,7 +124,7 @@ func BenchmarkLogger_medium(b *testing.B) {
 			{"file", "sloth.png"},
 			{"type", "image/png"},
 			{"size", 1 << 20},
-		}).Info("upload")
+		}).Info(log.String("upload"))
 	}
 }
 
@@ -149,6 +150,62 @@ func BenchmarkLogger_large(b *testing.B) {
 				{"context", "such useful"},
 				{"much", "fun"},
 			}).
-			WithError(err).Error("upload failed")
+			WithError(err).Error(log.String("upload failed"))
 	}
+}
+
+func BenchmarkLogger_levels(b *testing.B) {
+	doWork := func(l log.Interface) {
+		for i := 0; i < 10; i++ {
+			var fn log.StringFunc = func() string {
+				return fmt.Sprintf("loging value %s and %s.", "value1", strings.Repeat("value2", i+1))
+			}
+			l.Info(fn)
+		}
+	}
+
+	b.Run("level not met, Logger", func(b *testing.B) {
+		l := &log.Logger{
+			Handler: discard.New(),
+			Level:   log.ErrorLevel,
+		}
+		for i := 0; i < b.N; i++ {
+			doWork(l)
+		}
+	})
+
+	b.Run("level not met, Entry", func(b *testing.B) {
+		l := &log.Logger{
+			Handler: discard.New(),
+			Level:   log.ErrorLevel,
+		}
+		entry := l.WithField("file", "sloth.png")
+		for i := 0; i < b.N; i++ {
+			doWork(entry)
+		}
+	})
+
+	b.Run("level met", func(b *testing.B) {
+		l := &log.Logger{
+			Handler: discard.New(),
+			Level:   log.InfoLevel,
+		}
+		for i := 0; i < b.N; i++ {
+			for j := 0; j < 10; j++ {
+				doWork(l)
+			}
+		}
+	})
+
+	b.Run("level met, Entry", func(b *testing.B) {
+		l := &log.Logger{
+			Handler: discard.New(),
+			Level:   log.InfoLevel,
+		}
+		entry := l.WithField("file", "sloth.png")
+		for i := 0; i < b.N; i++ {
+			doWork(entry)
+		}
+	})
+
 }

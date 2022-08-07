@@ -1,12 +1,30 @@
 package log
 
 import (
-	stdlog "log"
+	"fmt"
+
 	"time"
 )
 
 // assert interface compliance.
 var _ Interface = (*Logger)(nil)
+
+// String implements fmt.Stringer and can be used directly in
+// the log methods.
+type String string
+
+// StringFunc is a function that returns a string.
+// It also implements the fmt.Stringer interface and
+// can therefore be used as argument to the log methods.
+type StringFunc func() string
+
+func (f StringFunc) String() string {
+	return f()
+}
+
+func (s String) String() string {
+	return string(s)
+}
 
 // Fielder is an interface for providing fields to custom types.
 type Fielder interface {
@@ -77,64 +95,54 @@ func (l *Logger) WithError(err error) *EntryFields {
 }
 
 // Debug level message.
-func (l *Logger) Debug(msg string) {
-	NewEntry(l).Debug(msg)
+func (l *Logger) Debug(s fmt.Stringer) {
+	if DebugLevel < l.Level {
+		return
+	}
+	NewEntry(l).Debug(s)
 }
 
 // Info level message.
-func (l *Logger) Info(msg string) {
-	NewEntry(l).Info(msg)
+func (l *Logger) Info(s fmt.Stringer) {
+	if InfoLevel < l.Level {
+		return
+	}
+	NewEntry(l).Info(s)
 }
 
 // Warn level message.
-func (l *Logger) Warn(msg string) {
-	NewEntry(l).Warn(msg)
+func (l *Logger) Warn(s fmt.Stringer) {
+	if WarnLevel < l.Level {
+		return
+	}
+	NewEntry(l).Warn(s)
 }
 
 // Error level message.
-func (l *Logger) Error(msg string) {
-	NewEntry(l).Error(msg)
+func (l *Logger) Error(s fmt.Stringer) {
+	if ErrorLevel < l.Level {
+		return
+	}
+	NewEntry(l).Error(s)
 }
 
 // Fatal level message, followed by an exit.
-func (l *Logger) Fatal(msg string) {
-	NewEntry(l).Fatal(msg)
-}
-
-// Debugf level formatted message.
-func (l *Logger) Debugf(msg string, v ...any) {
-	NewEntry(l).Debugf(msg, v...)
-}
-
-// Infof level formatted message.
-func (l *Logger) Infof(msg string, v ...any) {
-	NewEntry(l).Infof(msg, v...)
-}
-
-// Warnf level formatted message.
-func (l *Logger) Warnf(msg string, v ...any) {
-	NewEntry(l).Warnf(msg, v...)
-}
-
-// Errorf level formatted message.
-func (l *Logger) Errorf(msg string, v ...any) {
-	NewEntry(l).Errorf(msg, v...)
-}
-
-// Fatalf level formatted message, followed by an exit.
-func (l *Logger) Fatalf(msg string, v ...any) {
-	NewEntry(l).Fatalf(msg, v...)
+func (l *Logger) Fatal(s fmt.Stringer) {
+	if FatalLevel < l.Level {
+		return
+	}
+	NewEntry(l).Fatal(s)
 }
 
 // log the message, invoking the handler. We clone the entry here
 // to bypass the overhead in Entry methods when the level is not
 // met.
-func (l *Logger) log(level Level, e *EntryFields, msg string) {
+func (l *Logger) log(level Level, e *EntryFields, s fmt.Stringer) {
 	if level < l.Level {
 		return
 	}
 
-	if err := l.Handler.HandleLog(e.finalize(level, msg)); err != nil {
-		stdlog.Printf("error logging: %s", err)
+	if err := l.Handler.HandleLog(e.finalize(level, s.String())); err != nil {
+		panic(fmt.Sprintf("log: error invoking handler: %v", err))
 	}
 }

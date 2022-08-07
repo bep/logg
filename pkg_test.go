@@ -2,6 +2,7 @@ package log_test
 
 import (
 	"errors"
+	"fmt"
 	"testing"
 
 	qt "github.com/frankban/quicktest"
@@ -30,7 +31,7 @@ func TestInfo(t *testing.T) {
 	h := memory.New()
 	log.SetHandler(h)
 
-	log.Infof("logged in %s", "Tobi")
+	log.Info(log.String("logged in Tobi"))
 
 	e := h.Entries[0]
 	qt.Assert(t, "logged in Tobi", qt.Equals, e.Message)
@@ -42,7 +43,7 @@ func TestFielder(t *testing.T) {
 	log.SetHandler(h)
 
 	pet := &Pet{"Tobi", 3}
-	log.WithFields(pet).Info("add pet")
+	log.WithFields(pet).Info(log.String("add pet"))
 
 	e := h.Entries[0]
 	qt.Assert(t, e.Fields, qt.DeepEquals, log.Fields{
@@ -53,18 +54,18 @@ func TestFielder(t *testing.T) {
 
 // Unstructured logging is supported, but not recommended since it is hard to query.
 func Example_unstructured() {
-	log.Infof("%s logged in", "Tobi")
+	log.Info(log.String(fmt.Sprintf("%s logged in", "Tobi")))
 }
 
 // Structured logging is supported with fields, and is recommended over the formatted message variants.
 func Example_structured() {
-	log.WithField("user", "Tobo").Info("logged in")
+	log.WithField("user", "Tobo").Info(log.String("logged in"))
 }
 
 // Errors are passed to WithError(), populating the "error" field.
 func Example_errors() {
 	err := errors.New("boom")
-	log.WithError(err).Error("upload failed")
+	log.WithError(err).Error(log.String("upload failed"))
 }
 
 // Multiple fields can be set, via chaining, or WithFields().
@@ -73,5 +74,5 @@ func Example_multipleFields() {
 		{"user", "Tobi"},
 		{"file", "sloth.png"},
 		{"type", "image/png"},
-	}).Info("upload")
+	}).Info(log.String("upload"))
 }
