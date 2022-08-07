@@ -15,7 +15,7 @@ type Fielder interface {
 }
 
 // Fields represents a map of entry level data used for structured logging.
-type Fields map[string]interface{}
+type Fields map[string]any
 
 // Fields implements Fielder.
 func (f Fields) Fields() Fields {
@@ -23,7 +23,7 @@ func (f Fields) Fields() Fields {
 }
 
 // Get field value by name.
-func (f Fields) Get(name string) interface{} {
+func (f Fields) Get(name string) any {
 	return f[name]
 }
 
@@ -71,7 +71,7 @@ func (l *Logger) WithFields(fields Fielder) *Entry {
 //
 // Note that the `key` should not have spaces in it - use camel
 // case or underscores
-func (l *Logger) WithField(key string, value interface{}) *Entry {
+func (l *Logger) WithField(key string, value any) *Entry {
 	return NewEntry(l).WithField(key, value)
 }
 
@@ -112,27 +112,27 @@ func (l *Logger) Fatal(msg string) {
 }
 
 // Debugf level formatted message.
-func (l *Logger) Debugf(msg string, v ...interface{}) {
+func (l *Logger) Debugf(msg string, v ...any) {
 	NewEntry(l).Debugf(msg, v...)
 }
 
 // Infof level formatted message.
-func (l *Logger) Infof(msg string, v ...interface{}) {
+func (l *Logger) Infof(msg string, v ...any) {
 	NewEntry(l).Infof(msg, v...)
 }
 
 // Warnf level formatted message.
-func (l *Logger) Warnf(msg string, v ...interface{}) {
+func (l *Logger) Warnf(msg string, v ...any) {
 	NewEntry(l).Warnf(msg, v...)
 }
 
 // Errorf level formatted message.
-func (l *Logger) Errorf(msg string, v ...interface{}) {
+func (l *Logger) Errorf(msg string, v ...any) {
 	NewEntry(l).Errorf(msg, v...)
 }
 
 // Fatalf level formatted message, followed by an exit.
-func (l *Logger) Fatalf(msg string, v ...interface{}) {
+func (l *Logger) Fatalf(msg string, v ...any) {
 	NewEntry(l).Fatalf(msg, v...)
 }
 

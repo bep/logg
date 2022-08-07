@@ -10,7 +10,7 @@ import (
 // field used for sorting.
 type field struct {
 	Name  string
-	Value interface{}
+	Value any
 }
 
 // by sorts fields by name.

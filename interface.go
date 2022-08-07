@@ -5,7 +5,7 @@ import "time"
 // Interface represents the API of both Logger and Entry.
 type Interface interface {
 	WithFields(Fielder) *Entry
-	WithField(string, interface{}) *Entry
+	WithField(string, any) *Entry
 	WithDuration(time.Duration) *Entry
 	WithError(error) *Entry
 	Debug(string)
@@ -13,10 +13,10 @@ type Interface interface {
 	Warn(string)
 	Error(string)
 	Fatal(string)
-	Debugf(string, ...interface{})
-	Infof(string, ...interface{})
-	Warnf(string, ...interface{})
-	Errorf(string, ...interface{})
-	Fatalf(string, ...interface{})
+	Debugf(string, ...any)
+	Infof(string, ...any)
+	Warnf(string, ...any)
+	Errorf(string, ...any)
+	Fatalf(string, ...any)
 	Trace(string) *Entry
 }
