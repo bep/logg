@@ -67,7 +67,7 @@ func (h *Handler) HandleLog(e *log.Entry) error {
 
 	color.Fprintf(h.Writer, "%s %-25s", bold.Sprintf("%*s", h.Padding+1, level), e.Message)
 
-	for _, field := range e.Fields {
+	for _, field := range e.FieldsUnique {
 		if field.Name == "source" {
 			continue
 		}

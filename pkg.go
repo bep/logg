@@ -31,23 +31,23 @@ func SetLevelFromString(s string) {
 }
 
 // WithFields returns a new entry with `fields` set.
-func WithFields(fields Fielder) *Entry {
+func WithFields(fields Fielder) *EntryFields {
 	return Log.WithFields(fields)
 }
 
 // WithField returns a new entry with the `key` and `value` set.
-func WithField(key string, value any) *Entry {
+func WithField(key string, value any) *EntryFields {
 	return Log.WithField(key, value)
 }
 
 // WithDuration returns a new entry with the "duration" field set
 // to the given duration in milliseconds.
-func WithDuration(d time.Duration) *Entry {
+func WithDuration(d time.Duration) *EntryFields {
 	return Log.WithDuration(d)
 }
 
 // WithError returns a new entry with the "error" set to `err`.
-func WithError(err error) *Entry {
+func WithError(err error) *EntryFields {
 	return Log.WithError(err)
 }
 
@@ -99,10 +99,4 @@ func Errorf(msg string, v ...any) {
 // Fatalf level formatted message, followed by an exit.
 func Fatalf(msg string, v ...any) {
 	Log.Fatalf(msg, v...)
-}
-
-// Trace returns a new entry with a Stop method to fire off
-// a corresponding completion log, useful with defer.
-func Trace(msg string) *Entry {
-	return Log.Trace(msg)
 }
