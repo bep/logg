@@ -38,12 +38,12 @@ func TestParseLevel(t *testing.T) {
 
 func TestLevel_MarshalJSON(t *testing.T) {
 	e := Entry{
-		Level:   InfoLevel,
-		Message: "hello",
-		Fields:  Fields{},
+		Level:       InfoLevel,
+		Message:     "hello",
+		EntryFields: &EntryFields{},
 	}
 
-	expect := `{"fields":[],"level":"info","timestamp":"0001-01-01T00:00:00Z","message":"hello"}`
+	expect := `{"fields":{},"level":"info","timestamp":"0001-01-01T00:00:00Z","message":"hello"}`
 
 	b, err := json.Marshal(e)
 	qt.Assert(t, err, qt.IsNil)
@@ -51,7 +51,7 @@ func TestLevel_MarshalJSON(t *testing.T) {
 }
 
 func TestLevel_UnmarshalJSON(t *testing.T) {
-	s := `{"fields":[],"level":"info","timestamp":"0001-01-01T00:00:00Z","message":"hello"}`
+	s := `{"fields":{},"level":"info","timestamp":"0001-01-01T00:00:00Z","message":"hello"}`
 	e := new(Entry)
 
 	err := json.Unmarshal([]byte(s), e)

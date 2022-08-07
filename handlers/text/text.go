@@ -69,7 +69,7 @@ func (h *Handler) HandleLog(e *log.Entry) error {
 	ts := time.Since(start) / time.Second
 	fmt.Fprintf(h.Writer, "\033[%dm%6s\033[0m[%04d] %-25s", color, level, ts, e.Message)
 
-	for _, f := range e.Fields {
+	for _, f := range e.FieldsUnique {
 		fmt.Fprintf(h.Writer, " \033[%dm%s\033[0m=%v", color, f.Name, f.Value)
 	}
 

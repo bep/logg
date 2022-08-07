@@ -53,7 +53,7 @@ type Logger struct {
 }
 
 // WithFields returns a new entry with `fields` set.
-func (l *Logger) WithFields(fields Fielder) *Entry {
+func (l *Logger) WithFields(fields Fielder) *EntryFields {
 	return NewEntry(l).WithFields(fields.Fields())
 }
 
@@ -61,18 +61,18 @@ func (l *Logger) WithFields(fields Fielder) *Entry {
 //
 // Note that the `key` should not have spaces in it - use camel
 // case or underscores
-func (l *Logger) WithField(key string, value any) *Entry {
+func (l *Logger) WithField(key string, value any) *EntryFields {
 	return NewEntry(l).WithField(key, value)
 }
 
 // WithDuration returns a new entry with the "duration" field set
 // to the given duration in milliseconds.
-func (l *Logger) WithDuration(d time.Duration) *Entry {
+func (l *Logger) WithDuration(d time.Duration) *EntryFields {
 	return NewEntry(l).WithDuration(d)
 }
 
 // WithError returns a new entry with the "error" set to `err`.
-func (l *Logger) WithError(err error) *Entry {
+func (l *Logger) WithError(err error) *EntryFields {
 	return NewEntry(l).WithError(err)
 }
 
@@ -126,16 +126,10 @@ func (l *Logger) Fatalf(msg string, v ...any) {
 	NewEntry(l).Fatalf(msg, v...)
 }
 
-// Trace returns a new entry with a Stop method to fire off
-// a corresponding completion log, useful with defer.
-func (l *Logger) Trace(msg string) *Entry {
-	return NewEntry(l).Trace(msg)
-}
-
 // log the message, invoking the handler. We clone the entry here
 // to bypass the overhead in Entry methods when the level is not
 // met.
-func (l *Logger) log(level Level, e *Entry, msg string) {
+func (l *Logger) log(level Level, e *EntryFields, msg string) {
 	if level < l.Level {
 		return
 	}

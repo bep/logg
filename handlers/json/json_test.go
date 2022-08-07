@@ -17,8 +17,7 @@ func init() {
 	}
 }
 
-// TODO(bep) fix me.
-func _Test(t *testing.T) {
+func Test(t *testing.T) {
 	var buf bytes.Buffer
 
 	log.SetHandler(json.New(&buf))
