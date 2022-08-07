@@ -7,8 +7,8 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/apex/log"
-	"github.com/apex/log/handlers/text"
+	"github.com/bep/log"
+	"github.com/bep/log/handlers/text"
 )
 
 func init() {

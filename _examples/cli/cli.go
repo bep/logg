@@ -4,8 +4,8 @@ import (
 	"errors"
 	"time"
 
-	"github.com/apex/log"
-	"github.com/apex/log/handlers/cli"
+	"github.com/bep/log"
+	"github.com/bep/log/handlers/cli"
 )
 
 func main() {

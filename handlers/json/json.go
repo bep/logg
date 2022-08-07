@@ -7,7 +7,7 @@ import (
 	"os"
 	"sync"
 
-	"github.com/apex/log"
+	"github.com/bep/log"
 )
 
 // Default handler outputting to stderr.

@@ -5,8 +5,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/apex/log"
-	"github.com/apex/log/handlers/logfmt"
+	"github.com/bep/log"
+	"github.com/bep/log/handlers/logfmt"
 )
 
 func main() {
