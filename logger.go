@@ -2,7 +2,6 @@ package log
 
 import (
 	stdlog "log"
-	"sort"
 	"time"
 )
 
@@ -14,27 +13,18 @@ type Fielder interface {
 	Fields() Fields
 }
 
-// Fields represents a map of entry level data used for structured logging.
-type Fields map[string]any
+// Field holds a named value.
+type Field struct {
+	Name  string `json:"name"`
+	Value any    `json:"value"`
+}
+
+// Fields represents a slice of entry level data used for structured logging.
+type Fields []Field
 
 // Fields implements Fielder.
 func (f Fields) Fields() Fields {
 	return f
-}
-
-// Get field value by name.
-func (f Fields) Get(name string) any {
-	return f[name]
-}
-
-// Names returns field names sorted.
-func (f Fields) Names() (v []string) {
-	for k := range f {
-		v = append(v, k)
-	}
-
-	sort.Strings(v)
-	return
 }
 
 // The HandlerFunc type is an adapter to allow the use of ordinary functions as

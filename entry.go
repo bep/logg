@@ -21,7 +21,6 @@ type Entry struct {
 	Timestamp time.Time `json:"timestamp"`
 	Message   string    `json:"message"`
 	start     time.Time
-	fields    []Fields
 }
 
 // NewEntry returns a new entry for `log`.
@@ -32,19 +31,14 @@ func NewEntry(log *Logger) *Entry {
 }
 
 // WithFields returns a new entry with `fields` set.
-func (e *Entry) WithFields(fields Fielder) *Entry {
-	f := []Fields{}
-	f = append(f, e.fields...)
-	f = append(f, fields.Fields())
-	return &Entry{
-		Logger: e.Logger,
-		fields: f,
-	}
+func (e Entry) WithFields(fielder Fielder) *Entry {
+	e.Fields = append(e.Fields, fielder.Fields()...)
+	return &e
 }
 
 // WithField returns a new entry with the `key` and `value` set.
 func (e *Entry) WithField(key string, value any) *Entry {
-	return e.WithFields(Fields{key: value})
+	return e.WithFields(Fields{{key, value}})
 }
 
 // WithDuration returns a new entry with the "duration" field set
@@ -80,7 +74,7 @@ func (e *Entry) WithError(err error) *Entry {
 	}
 
 	if f, ok := err.(Fielder); ok {
-		ctx = ctx.WithFields(f.Fields())
+		ctx = ctx.WithFields(f)
 	}
 
 	return ctx
@@ -157,17 +151,28 @@ func (e *Entry) Stop(err *error) {
 	}
 }
 
-// mergedFields returns the fields list collapsed into a single map.
+// mergedFields returns the fields list collapsed into a single slice.
 func (e *Entry) mergedFields() Fields {
-	f := Fields{}
-
-	for _, fields := range e.fields {
-		for k, v := range fields {
-			f[k] = v
+	fields := make(Fields, 0, len(e.Fields))
+	for i := len(e.Fields) - 1; i >= 0; i-- {
+		f := e.Fields[i]
+		var seen bool
+		for _, f2 := range fields {
+			if f.Name == f2.Name {
+				seen = true
+				break
+			}
+		}
+		if !seen {
+			fields = append(fields, f)
 		}
 	}
 
-	return f
+	if len(fields) == 0 {
+		return nil
+	}
+
+	return fields
 }
 
 // finalize returns a copy of the Entry with Fields merged.

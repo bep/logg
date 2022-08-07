@@ -62,7 +62,6 @@ func New(w io.Writer) *Handler {
 func (h *Handler) HandleLog(e *log.Entry) error {
 	color := Colors[e.Level]
 	level := Strings[e.Level]
-	names := e.Fields.Names()
 
 	h.mu.Lock()
 	defer h.mu.Unlock()
@@ -70,8 +69,8 @@ func (h *Handler) HandleLog(e *log.Entry) error {
 	ts := time.Since(start) / time.Second
 	fmt.Fprintf(h.Writer, "\033[%dm%6s\033[0m[%04d] %-25s", color, level, ts, e.Message)
 
-	for _, name := range names {
-		fmt.Fprintf(h.Writer, " \033[%dm%s\033[0m=%v", color, name, e.Fields.Get(name))
+	for _, f := range e.Fields {
+		fmt.Fprintf(h.Writer, " \033[%dm%s\033[0m=%v", color, f.Name, f.Value)
 	}
 
 	fmt.Fprintln(h.Writer)
