@@ -62,12 +62,13 @@ func (e EntryFields) WithLevel(level Level) *EntryFields {
 	return &e
 }
 
-func (e EntryFields) WithFields(fielder Fielder) *EntryFields {
+func (e *EntryFields) WithFields(fielder Fielder) *EntryFields {
 	if e.isLevelDisabled() {
-		return &e
+		return e
 	}
-	e.Fields = append(e.Fields, fielder.Fields()...)
-	return &e
+	x := *e
+	x.Fields = append(x.Fields, fielder.Fields()...)
+	return &x
 }
 
 func (e *EntryFields) WithField(key string, value any) *EntryFields {

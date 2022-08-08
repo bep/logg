@@ -39,6 +39,16 @@ type Fielder interface {
 	Fields() Fields
 }
 
+func NewFieldsFunc(fn func() Fields) FieldsFunc {
+	return FieldsFunc(fn)
+}
+
+type FieldsFunc func() Fields
+
+func (f FieldsFunc) Fields() Fields {
+	return f()
+}
+
 // Field holds a named value.
 type Field struct {
 	Name  string `json:"name"`
