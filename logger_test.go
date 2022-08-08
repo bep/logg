@@ -130,7 +130,7 @@ func BenchmarkLogger_large(b *testing.B) {
 }
 
 func BenchmarkLogger_levels(b *testing.B) {
-	doWork := func(l log.Logger) {
+	doWork := func(l log.LevelLogger) {
 		for i := 0; i < 10; i++ {
 			l.Log(log.NewStringFunc(
 				func() string {

@@ -10,7 +10,7 @@ import (
 )
 
 // assert interface compliance.
-var _ Leveler = (*logger)(nil)
+var _ Logger = (*logger)(nil)
 
 // String implements fmt.Stringer and can be used directly in
 // the log methods.
@@ -92,7 +92,7 @@ type LoggerConfig struct {
 }
 
 // New returns a new logger.
-func NewLogger(cfg LoggerConfig) Leveler {
+func NewLogger(cfg LoggerConfig) Logger {
 	if cfg.Handler == nil {
 		panic("handler cannot be nil")
 	}

@@ -27,21 +27,21 @@ func TestEntry_WithFields(t *testing.T) {
 }
 
 func TestEntry_WithField(t *testing.T) {
-	a := NewEntry(nil)
+	a := NewLogger(LoggerConfig{Handler: NoopHandler, Level: InfoLevel}).WithLevel(InfoLevel)
 	b := a.WithField("foo", "baz").WithField("foo", "bar")
 	qt.Assert(t, a.distinctFieldsLastByName(), qt.IsNil)
 	qt.Assert(t, b.distinctFieldsLastByName(), qt.DeepEquals, Fields{{"foo", "bar"}})
 }
 
 func TestEntry_WithError(t *testing.T) {
-	a := NewEntry(nil)
+	a := NewLogger(LoggerConfig{Handler: NoopHandler, Level: InfoLevel}).WithLevel(InfoLevel)
 	b := a.WithError(fmt.Errorf("boom"))
 	qt.Assert(t, a.distinctFieldsLastByName(), qt.IsNil)
 	qt.Assert(t, b.distinctFieldsLastByName(), qt.DeepEquals, Fields{{"error", "boom"}})
 }
 
 func TestEntry_WithError_fields(t *testing.T) {
-	a := NewEntry(nil)
+	a := NewLogger(LoggerConfig{Handler: NoopHandler, Level: InfoLevel}).WithLevel(InfoLevel)
 	b := a.WithError(errFields("boom"))
 	qt.Assert(t, a.distinctFieldsLastByName(), qt.IsNil)
 	qt.Assert(t,
@@ -54,14 +54,14 @@ func TestEntry_WithError_fields(t *testing.T) {
 }
 
 func TestEntry_WithError_nil(t *testing.T) {
-	a := NewEntry(nil)
+	a := NewLogger(LoggerConfig{Handler: NoopHandler, Level: InfoLevel}).WithLevel(InfoLevel)
 	b := a.WithError(nil)
 	qt.Assert(t, a.distinctFieldsLastByName(), qt.IsNil)
 	qt.Assert(t, b.distinctFieldsLastByName(), qt.IsNil)
 }
 
 func TestEntry_WithDuration(t *testing.T) {
-	a := NewEntry(nil)
+	a := NewLogger(LoggerConfig{Handler: NoopHandler, Level: InfoLevel}).WithLevel(InfoLevel)
 	b := a.WithDuration(time.Second * 2)
 	qt.Assert(t, b.distinctFieldsLastByName(), qt.DeepEquals, Fields{{"duration", int64(2000)}})
 }
