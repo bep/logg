@@ -9,8 +9,8 @@ import (
 
 // assert interface compliance.
 var (
-	_ Logger = (*EntryFields)(nil)
-	_ Logger = (*Entry)(nil)
+	_ LevelLogger = (*EntryFields)(nil)
+	_ LevelLogger = (*Entry)(nil)
 )
 
 // EntryFields represents a single log entry at a given log level.
@@ -57,26 +57,30 @@ func NewEntry(log *logger) *EntryFields {
 	}
 }
 
-// WithLevel returns a new entry with `level` set.
 func (e EntryFields) WithLevel(level Level) *EntryFields {
 	e.Level = level
 	return &e
 }
 
-// WithFields returns a new entry with `fields` set.
 func (e EntryFields) WithFields(fielder Fielder) *EntryFields {
+	if e.isLevelDisabled() {
+		return &e
+	}
 	e.Fields = append(e.Fields, fielder.Fields()...)
 	return &e
 }
 
-// WithField returns a new entry with the `key` and `value` set.
 func (e *EntryFields) WithField(key string, value any) *EntryFields {
+	if e.isLevelDisabled() {
+		return e
+	}
 	return e.WithFields(Fields{{key, value}})
 }
 
-// WithDuration returns a new entry with the "duration" field set
-// to the given duration in milliseconds.
 func (e *EntryFields) WithDuration(d time.Duration) *EntryFields {
+	if e.isLevelDisabled() {
+		return e
+	}
 	return e.WithField("duration", d.Milliseconds())
 }
 
@@ -85,7 +89,7 @@ func (e *EntryFields) WithDuration(d time.Duration) *EntryFields {
 // The given error may implement .Fielder, if it does the method
 // will add all its `.Fields()` into the returned entry.
 func (e *EntryFields) WithError(err error) *EntryFields {
-	if err == nil {
+	if err == nil || e.isLevelDisabled() {
 		return e
 	}
 
@@ -111,6 +115,10 @@ func (e *EntryFields) WithError(err error) *EntryFields {
 	}
 
 	return ctx
+}
+
+func (e *EntryFields) isLevelDisabled() bool {
+	return e.Level < e.Logger.Level
 }
 
 // Log a message at the given level.
