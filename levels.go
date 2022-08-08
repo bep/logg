@@ -14,7 +14,7 @@ type Level int
 
 // Log levels.
 const (
-	InvalidLevel Level = iota - 1
+	InvalidLevel Level = iota
 	DebugLevel
 	InfoLevel
 	WarnLevel
