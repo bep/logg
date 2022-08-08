@@ -79,7 +79,11 @@ func (f HandlerFunc) HandleLog(e *Entry) error {
 //
 // It is left up to Handlers to implement thread-safety.
 type Handler interface {
-	HandleLog(*Entry) error
+	// HandleLog is invoked for each log event.
+	// Note that i e is going to be used after the call to HandleLog returns,
+	// it must be cloned with e.Clone().
+	// TODO(bep) interface?
+	HandleLog(e *Entry) error
 }
 
 // NoopHandler is a no-op handler that discards all log messages.
@@ -139,12 +143,12 @@ type Clock interface {
 }
 
 // WithLevel returns a new entry with `level` set.
-func (l *logger) WithLevel(level Level) *EntryFields {
+func (l *logger) WithLevel(level Level) *Entry {
 	return NewEntry(l).WithLevel(level)
 }
 
 // WithFields returns a new entry with `fields` set.
-func (l *logger) WithFields(fields Fielder) *EntryFields {
+func (l *logger) WithFields(fields Fielder) *Entry {
 	return NewEntry(l).WithFields(fields.Fields())
 }
 
@@ -152,30 +156,32 @@ func (l *logger) WithFields(fields Fielder) *EntryFields {
 //
 // Note that the `key` should not have spaces in it - use camel
 // case or underscores
-func (l *logger) WithField(key string, value any) *EntryFields {
+func (l *logger) WithField(key string, value any) *Entry {
 	return NewEntry(l).WithField(key, value)
 }
 
 // WithDuration returns a new entry with the "duration" field set
 // to the given duration in milliseconds.
-func (l *logger) WithDuration(d time.Duration) *EntryFields {
+func (l *logger) WithDuration(d time.Duration) *Entry {
 	return NewEntry(l).WithDuration(d)
 }
 
 // WithError returns a new entry with the "error" set to `err`.
-func (l *logger) WithError(err error) *EntryFields {
+func (l *logger) WithError(err error) *Entry {
 	return NewEntry(l).WithError(err)
 }
 
-// log the message, invoking the handler. We clone the entry here
-// to bypass the overhead in Entry methods when the level is not
-// met.
-func (l *logger) log(e *EntryFields, s fmt.Stringer) {
+// log the message, invoking the handler.
+func (l *logger) log(e *Entry, s fmt.Stringer) {
 	if e.Level < l.Level {
 		return
 	}
 
-	if err := l.Handler.HandleLog(e.finalize(s.String())); err != nil {
+	finalized := objectPools.GetEntry()
+	defer objectPools.PutEntry(finalized)
+	e.finalize(finalized, s.String())
+
+	if err := l.Handler.HandleLog(finalized); err != nil {
 		stdlog.Printf("error logging: %s", err)
 	}
 

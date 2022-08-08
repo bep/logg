@@ -8,7 +8,7 @@ import (
 // Logger is the main interface for the logger.
 type Logger interface {
 	// WithLevel returns a new entry with `level` set.
-	WithLevel(Level) *EntryFields
+	WithLevel(Level) *Entry
 }
 
 // LevelLogger
@@ -18,22 +18,22 @@ type LevelLogger interface {
 	Log(s fmt.Stringer)
 
 	// WithLevel returns a new entry with `level` set.
-	WithLevel(Level) *EntryFields
+	WithLevel(Level) *Entry
 
 	// WithFields returns a new entry with the`fields` in fields set.
 	// This is a noop if LevelLogger's level is less than Logger's.
-	WithFields(fields Fielder) *EntryFields
+	WithFields(fields Fielder) *Entry
 
 	// WithLevel returns a new entry with the field f set with value v
 	// This is a noop if LevelLogger's level is less than Logger's.
-	WithField(f string, v any) *EntryFields
+	WithField(f string, v any) *Entry
 
 	// WithDuration returns a new entry with the "duration" field set
 	// to the given duration in milliseconds.
 	// This is a noop if LevelLogger's level is less than Logger's.
-	WithDuration(time.Duration) *EntryFields
+	WithDuration(time.Duration) *Entry
 
 	// WithError returns a new entry with the "error" set to `err`.
 	// This is a noop if err is nil or  LevelLogger's level is less than Logger's.
-	WithError(error) *EntryFields
+	WithError(error) *Entry
 }

@@ -129,6 +129,30 @@ func BenchmarkLogger_large(b *testing.B) {
 	}
 }
 
+func BenchmarkLogger_common_context(b *testing.B) {
+	l := log.NewLogger(log.LoggerConfig{Level: log.InfoLevel, Handler: log.NoopHandler})
+	info := l.WithLevel(log.InfoLevel)
+	for i := 0; i < 3; i++ {
+		info = info.WithField(fmt.Sprintf("context%d", i), "value")
+	}
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		info.Log(log.String("upload"))
+	}
+}
+
+func BenchmarkLogger_common_context_many_fields(b *testing.B) {
+	l := log.NewLogger(log.LoggerConfig{Level: log.InfoLevel, Handler: log.NoopHandler})
+	info := l.WithLevel(log.InfoLevel)
+	for i := 0; i < 42; i++ {
+		info = info.WithField(fmt.Sprintf("context%d", i), "value")
+	}
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		info.Log(log.String("upload"))
+	}
+}
+
 func BenchmarkLogger_levels(b *testing.B) {
 	doWork := func(l log.LevelLogger) {
 		for i := 0; i < 10; i++ {

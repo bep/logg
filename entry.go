@@ -9,34 +9,22 @@ import (
 
 // assert interface compliance.
 var (
-	_ LevelLogger = (*EntryFields)(nil)
 	_ LevelLogger = (*Entry)(nil)
 )
 
-// EntryFields represents a single log entry at a given log level.
-type EntryFields struct {
-	Logger *logger `json:"-"`
-	Fields Fields  `json:"-"`
-	Level  Level   `json:"level"`
-}
-
-// Entry holds a Entry with a Message and a Timestamp.
-// This is what is actually logged.
+// Entry represents a single log entry at a given log level.
 type Entry struct {
-	*EntryFields
-	Timestamp time.Time `json:"timestamp"`
-	Message   string    `json:"message"`
-}
+	logger *logger
 
-// FieldsDistinct returns a list of fields with duplicate names removed,
-// keeping the last.
-func (e *EntryFields) FieldsDistinct() Fields {
-	return e.distinctFieldsLastByName()
+	Timestamp time.Time `json:"timestamp"`
+	Level     Level     `json:"level"`
+	Fields    Fields    `json:"-"`
+	Message   string    `json:"message"`
 }
 
 func (e Entry) MarshalJSON() ([]byte, error) {
 	fields := make(map[string]any)
-	for _, f := range e.FieldsDistinct() {
+	for _, f := range e.Fields {
 		fields[f.Name] = f.Value
 	}
 
@@ -51,18 +39,18 @@ func (e Entry) MarshalJSON() ([]byte, error) {
 }
 
 // NewEntry returns a new entry for `log`.
-func NewEntry(log *logger) *EntryFields {
-	return &EntryFields{
-		Logger: log,
+func NewEntry(log *logger) *Entry {
+	return &Entry{
+		logger: log,
 	}
 }
 
-func (e EntryFields) WithLevel(level Level) *EntryFields {
+func (e Entry) WithLevel(level Level) *Entry {
 	e.Level = level
 	return &e
 }
 
-func (e *EntryFields) WithFields(fielder Fielder) *EntryFields {
+func (e *Entry) WithFields(fielder Fielder) *Entry {
 	if e.isLevelDisabled() {
 		return e
 	}
@@ -71,14 +59,14 @@ func (e *EntryFields) WithFields(fielder Fielder) *EntryFields {
 	return &x
 }
 
-func (e *EntryFields) WithField(key string, value any) *EntryFields {
+func (e *Entry) WithField(key string, value any) *Entry {
 	if e.isLevelDisabled() {
 		return e
 	}
 	return e.WithFields(Fields{{key, value}})
 }
 
-func (e *EntryFields) WithDuration(d time.Duration) *EntryFields {
+func (e *Entry) WithDuration(d time.Duration) *Entry {
 	if e.isLevelDisabled() {
 		return e
 	}
@@ -89,7 +77,7 @@ func (e *EntryFields) WithDuration(d time.Duration) *EntryFields {
 //
 // The given error may implement .Fielder, if it does the method
 // will add all its `.Fields()` into the returned entry.
-func (e *EntryFields) WithError(err error) *EntryFields {
+func (e *Entry) WithError(err error) *Entry {
 	if err == nil || e.isLevelDisabled() {
 		return e
 	}
@@ -118,23 +106,42 @@ func (e *EntryFields) WithError(err error) *EntryFields {
 	return ctx
 }
 
-func (e *EntryFields) isLevelDisabled() bool {
-	return e.Level < e.Logger.Level
+func (e *Entry) isLevelDisabled() bool {
+	return e.Level < e.logger.Level
 }
 
 // Log a message at the given level.
-func (e *EntryFields) Log(s fmt.Stringer) {
-	e.Logger.log(e, s)
+func (e *Entry) Log(s fmt.Stringer) {
+	e.logger.log(e, s)
 }
 
-// distinctFieldsLastByName returns the fields with duplicate names removed,
-// keeping the rightmost field (last) with a given name.
-func (e *EntryFields) distinctFieldsLastByName() Fields {
-	fields := make(Fields, 0, len(e.Fields))
+// Clone returns a new Entry with the same fields.
+func (e *Entry) Clone() *Entry {
+	x := *e
+	x.Fields = make(Fields, len(e.Fields))
+	copy(x.Fields, e.Fields)
+	return &x
+}
+
+func (e *Entry) reset() {
+	e.logger = nil
+	e.Level = 0
+	e.Fields = e.Fields[:0]
+	e.Message = ""
+	e.Timestamp = time.Time{}
+}
+
+// finalize populates dst with Level and  Fields merged from e and Message and Timestamp set.
+func (e *Entry) finalize(dst *Entry, msg string) {
+	dst.Message = msg
+	dst.Timestamp = e.logger.Clock.Now()
+	dst.Level = e.Level
+
+	// There mau be fields logged with the same name, keep the latest.
 	for i := len(e.Fields) - 1; i >= 0; i-- {
 		f := e.Fields[i]
 		var seen bool
-		for _, f2 := range fields {
+		for _, f2 := range dst.Fields {
 			if f.Name == f2.Name {
 				seen = true
 				break
@@ -142,24 +149,9 @@ func (e *EntryFields) distinctFieldsLastByName() Fields {
 		}
 		if !seen {
 			// Insert first.
-			fields = append(fields, Field{})
-			copy(fields[1:], fields[:])
-			fields[0] = f
+			dst.Fields = append(dst.Fields, Field{})
+			copy(dst.Fields[1:], dst.Fields[:])
+			dst.Fields[0] = f
 		}
-	}
-
-	if len(fields) == 0 {
-		return nil
-	}
-
-	return fields
-}
-
-// finalize returns a copy of the Entry with Fields merged.
-func (e *EntryFields) finalize(msg string) *Entry {
-	return &Entry{
-		EntryFields: e,
-		Message:     msg,
-		Timestamp:   e.Logger.Clock.Now(),
 	}
 }
