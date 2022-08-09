@@ -5,73 +5,46 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"sync"
-	"time"
+	"strings"
 
 	"github.com/bep/logg"
 )
 
 // Default handler outputting to stderr.
-var Default = New(os.Stderr)
-
-// start time.
-var start = time.Now()
-
-// colors.
-const (
-	none   = 0
-	red    = 31
-	green  = 32
-	yellow = 33
-	blue   = 34
-	gray   = 37
-)
-
-// Colors mapping.
-var Colors = [...]int{
-	logg.LevelDebug: gray,
-	logg.LevelInfo:  blue,
-	logg.LevelWarn:  yellow,
-	logg.LevelError: red,
-}
-
-// Strings mapping.
-var Strings = [...]string{
-	logg.LevelDebug: "DEBUG",
-	logg.LevelInfo:  "INFO",
-	logg.LevelWarn:  "WARN",
-	logg.LevelError: "ERROR",
-}
+var Default = New(os.Stderr, Options{})
 
 // Handler implementation.
 type Handler struct {
-	mu     sync.Mutex
-	Writer io.Writer
+	opts Options
+	w    io.Writer
+}
+
+// Options holds options for the text handler.
+type Options struct {
+	// Separator is the separator between fields.
+	// Default is " ".
+	Separator string
 }
 
 // New handler.
-func New(w io.Writer) *Handler {
+func New(w io.Writer, opts Options) *Handler {
+	if opts.Separator == "" {
+		opts.Separator = " "
+	}
 	return &Handler{
-		Writer: w,
+		w:    w,
+		opts: opts,
 	}
 }
 
 // HandleLog implements logg.Handler.
 func (h *Handler) HandleLog(e *logg.Entry) error {
-	color := Colors[e.Level]
-	level := Strings[e.Level]
-
-	h.mu.Lock()
-	defer h.mu.Unlock()
-
-	ts := time.Since(start) / time.Second
-	fmt.Fprintf(h.Writer, "\033[%dm%6s\033[0m[%04d] %-25s", color, level, ts, e.Message)
-
-	for _, f := range e.Fields {
-		fmt.Fprintf(h.Writer, " \033[%dm%s\033[0m=%v", color, f.Name, f.Value)
+	fields := make([]string, len(e.Fields))
+	for i, f := range e.Fields {
+		fields[i] = fmt.Sprintf("%s=%v", f.Name, f.Value)
 	}
 
-	fmt.Fprintln(h.Writer)
+	fmt.Fprintf(h.w, "%s%s%s%s%s\n", strings.ToUpper(e.Level.String()), h.opts.Separator, e.Message, h.opts.Separator, strings.Join(fields, h.opts.Separator))
 
 	return nil
 }
