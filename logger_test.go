@@ -154,6 +154,32 @@ func BenchmarkLogger_common_context_many_fields(b *testing.B) {
 	}
 }
 
+func BenchmarkLogger_context_many_fields_duplicate_names_with_field(b *testing.B) {
+	l := logg.NewLogger(logg.LoggerConfig{Level: logg.LevelInfo, Handler: handlers.Discard})
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		info := l.WithLevel(logg.LevelInfo)
+		for i := 0; i < 9999; i++ {
+			info = info.WithField("name", "value")
+		}
+		info.Log(logg.String("upload"))
+	}
+}
+
+func BenchmarkLogger_context_many_fields_duplicate_names_with_fields(b *testing.B) {
+	l := logg.NewLogger(logg.LoggerConfig{Level: logg.LevelInfo, Handler: handlers.Discard})
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		info := l.WithLevel(logg.LevelInfo)
+		for i := 0; i < 3333; i++ {
+			info = info.WithFields(logg.Fields{{"name", "value"}, {"name", "value"}, {"name", "value"}})
+		}
+		info.Log(logg.String("upload"))
+	}
+}
+
 func BenchmarkLogger_levels(b *testing.B) {
 	doWork := func(l logg.LevelLogger) {
 		for i := 0; i < 10; i++ {

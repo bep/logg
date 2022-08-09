@@ -32,6 +32,24 @@ func TestEntry_WithFields(t *testing.T) {
 	qt.Assert(t, time.Now().IsZero(), qt.IsFalse)
 }
 
+func TestEntry_WithManyFieldsWithSameName(t *testing.T) {
+	h := memory.New()
+	a := logg.NewLogger(logg.LoggerConfig{Handler: h, Level: logg.LevelInfo}).WithLevel(logg.LevelInfo)
+
+	b := a.WithFields(logg.Fields{{"foo", "bar"}})
+
+	for i := 0; i < 100; i++ {
+		b = b.WithFields(logg.Fields{{"foo", "bar"}})
+	}
+
+	b.Log(logg.String("upload"))
+	e := h.Entries[0]
+
+	qt.Assert(t, "upload", qt.Equals, e.Message)
+	qt.Assert(t, logg.Fields{{"foo", "bar"}}, qt.DeepEquals, e.Fields)
+
+}
+
 func TestEntry_WithField(t *testing.T) {
 	h := memory.New()
 	a := logg.NewLogger(logg.LoggerConfig{Handler: h, Level: logg.LevelInfo}).WithLevel(logg.LevelInfo)
