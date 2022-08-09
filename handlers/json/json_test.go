@@ -27,7 +27,7 @@ func TestJSONHandler(t *testing.T) {
 	info.Log(log.String("world"))
 	info.WithLevel(log.ErrorLevel).Log(log.String("boom"))
 
-	expected := "{\"fields\":{\"id\":\"123\",\"user\":\"tj\"},\"level\":\"info\",\"timestamp\":\"1976-10-24T12:15:02.127686412Z\",\"message\":\"hello\"}\n{\"fields\":{},\"level\":\"info\",\"timestamp\":\"1976-10-24T12:15:02.127686412Z\",\"message\":\"world\"}\n{\"fields\":{},\"level\":\"error\",\"timestamp\":\"1976-10-24T12:15:02.127686412Z\",\"message\":\"boom\"}\n"
+	expected := "{\"level\":\"info\",\"timestamp\":\"1976-10-24T12:15:02.127686412Z\",\"fields\":[{\"name\":\"user\",\"value\":\"tj\"},{\"name\":\"id\",\"value\":\"123\"}],\"message\":\"hello\"}\n{\"level\":\"info\",\"timestamp\":\"1976-10-24T12:15:02.127686412Z\",\"message\":\"world\"}\n{\"level\":\"error\",\"timestamp\":\"1976-10-24T12:15:02.127686412Z\",\"message\":\"boom\"}\n"
 
 	qt.Assert(t, buf.String(), qt.Equals, expected)
 }

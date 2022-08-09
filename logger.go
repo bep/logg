@@ -73,24 +73,6 @@ func (f HandlerFunc) HandleLog(e *Entry) error {
 	return f(e)
 }
 
-// Handler is used to handle log events, outputting them to
-// stdio or sending them to remote services. See the "handlers"
-// directory for implementations.
-//
-// It is left up to Handlers to implement thread-safety.
-type Handler interface {
-	// HandleLog is invoked for each log event.
-	// Note that i e is going to be used after the call to HandleLog returns,
-	// it must be cloned with e.Clone().
-	// TODO(bep) interface?
-	HandleLog(e *Entry) error
-}
-
-// NoopHandler is a no-op handler that discards all log messages.
-var NoopHandler = HandlerFunc(func(e *Entry) error {
-	return nil
-})
-
 // LoggerConfig is the configuration used to create a logger.
 type LoggerConfig struct {
 	// Level is the minimum level to log at.

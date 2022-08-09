@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/bep/log"
+	"github.com/bep/log/handlers"
 	"github.com/bep/log/handlers/memory"
 	qt "github.com/frankban/quicktest"
 )
@@ -84,7 +85,7 @@ func TestLogger_HandlerFunc(t *testing.T) {
 }
 
 func BenchmarkLogger_small(b *testing.B) {
-	l := log.NewLogger(log.LoggerConfig{Level: log.InfoLevel, Handler: log.NoopHandler})
+	l := log.NewLogger(log.LoggerConfig{Level: log.InfoLevel, Handler: handlers.Discard})
 	info := l.WithLevel(log.InfoLevel)
 
 	for i := 0; i < b.N; i++ {
@@ -93,7 +94,7 @@ func BenchmarkLogger_small(b *testing.B) {
 }
 
 func BenchmarkLogger_medium(b *testing.B) {
-	l := log.NewLogger(log.LoggerConfig{Level: log.InfoLevel, Handler: log.NoopHandler})
+	l := log.NewLogger(log.LoggerConfig{Level: log.InfoLevel, Handler: handlers.Discard})
 	info := l.WithLevel(log.InfoLevel)
 
 	for i := 0; i < b.N; i++ {
@@ -106,7 +107,7 @@ func BenchmarkLogger_medium(b *testing.B) {
 }
 
 func BenchmarkLogger_large(b *testing.B) {
-	l := log.NewLogger(log.LoggerConfig{Level: log.InfoLevel, Handler: log.NoopHandler})
+	l := log.NewLogger(log.LoggerConfig{Level: log.InfoLevel, Handler: handlers.Discard})
 	info := l.WithLevel(log.InfoLevel)
 
 	err := fmt.Errorf("boom")
@@ -130,7 +131,7 @@ func BenchmarkLogger_large(b *testing.B) {
 }
 
 func BenchmarkLogger_common_context(b *testing.B) {
-	l := log.NewLogger(log.LoggerConfig{Level: log.InfoLevel, Handler: log.NoopHandler})
+	l := log.NewLogger(log.LoggerConfig{Level: log.InfoLevel, Handler: handlers.Discard})
 	info := l.WithLevel(log.InfoLevel)
 	for i := 0; i < 3; i++ {
 		info = info.WithField(fmt.Sprintf("context%d", i), "value")
@@ -142,7 +143,7 @@ func BenchmarkLogger_common_context(b *testing.B) {
 }
 
 func BenchmarkLogger_common_context_many_fields(b *testing.B) {
-	l := log.NewLogger(log.LoggerConfig{Level: log.InfoLevel, Handler: log.NoopHandler})
+	l := log.NewLogger(log.LoggerConfig{Level: log.InfoLevel, Handler: handlers.Discard})
 	info := l.WithLevel(log.InfoLevel)
 	for i := 0; i < 42; i++ {
 		info = info.WithField(fmt.Sprintf("context%d", i), "value")
@@ -166,7 +167,7 @@ func BenchmarkLogger_levels(b *testing.B) {
 
 	b.Run("level not met", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
-			l := log.NewLogger(log.LoggerConfig{Level: log.ErrorLevel, Handler: log.NoopHandler})
+			l := log.NewLogger(log.LoggerConfig{Level: log.ErrorLevel, Handler: handlers.Discard})
 			error := l.WithLevel(log.InfoLevel)
 			doWork(error)
 		}
@@ -174,7 +175,7 @@ func BenchmarkLogger_levels(b *testing.B) {
 
 	b.Run("level not met, one field", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
-			l := log.NewLogger(log.LoggerConfig{Level: log.ErrorLevel, Handler: log.NoopHandler})
+			l := log.NewLogger(log.LoggerConfig{Level: log.ErrorLevel, Handler: handlers.Discard})
 			info := l.WithLevel(log.InfoLevel)
 			info = info.WithField("file", "sloth.png")
 			doWork(info)
@@ -183,7 +184,7 @@ func BenchmarkLogger_levels(b *testing.B) {
 
 	b.Run("level not met, many fields", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
-			l := log.NewLogger(log.LoggerConfig{Level: log.ErrorLevel, Handler: log.NoopHandler})
+			l := log.NewLogger(log.LoggerConfig{Level: log.ErrorLevel, Handler: handlers.Discard})
 			info := l.WithLevel(log.InfoLevel)
 			info = info.WithField("file", "sloth.png")
 			for i := 0; i < 32; i++ {
@@ -195,7 +196,7 @@ func BenchmarkLogger_levels(b *testing.B) {
 
 	b.Run("level met", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
-			l := log.NewLogger(log.LoggerConfig{Level: log.InfoLevel, Handler: log.NoopHandler})
+			l := log.NewLogger(log.LoggerConfig{Level: log.InfoLevel, Handler: handlers.Discard})
 			info := l.WithLevel(log.InfoLevel)
 			for j := 0; j < 10; j++ {
 				doWork(info)
@@ -205,7 +206,7 @@ func BenchmarkLogger_levels(b *testing.B) {
 
 	b.Run("level met, one field", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
-			l := log.NewLogger(log.LoggerConfig{Level: log.InfoLevel, Handler: log.NoopHandler})
+			l := log.NewLogger(log.LoggerConfig{Level: log.InfoLevel, Handler: handlers.Discard})
 			info := l.WithLevel(log.InfoLevel)
 			info = info.WithField("file", "sloth.png")
 			doWork(info)
@@ -214,7 +215,7 @@ func BenchmarkLogger_levels(b *testing.B) {
 
 	b.Run("level met, many fields", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
-			l := log.NewLogger(log.LoggerConfig{Level: log.InfoLevel, Handler: log.NoopHandler})
+			l := log.NewLogger(log.LoggerConfig{Level: log.InfoLevel, Handler: handlers.Discard})
 			info := l.WithLevel(log.InfoLevel)
 			info = info.WithField("file", "sloth.png")
 			for i := 0; i < 32; i++ {
