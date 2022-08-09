@@ -33,7 +33,6 @@ func newDisabledLognLog() log.LevelLogger {
 		Level:   log.ErrorLevel,
 	})
 	return logger.WithLevel(log.InfoLevel)
-
 }
 
 func newLognLog() log.LevelLogger {

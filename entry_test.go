@@ -58,7 +58,6 @@ func TestEntry_WithError_fields(t *testing.T) {
 			{"error", "boom"},
 			{"reason", "timeout"},
 		})
-
 }
 
 func TestEntry_WithError_nil(t *testing.T) {

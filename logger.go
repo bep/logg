@@ -165,5 +165,4 @@ func (l *logger) log(e *Entry, s fmt.Stringer) {
 	if err := l.Handler.HandleLog(finalized); err != nil {
 		stdlog.Printf("error logging: %s", err)
 	}
-
 }
