@@ -19,7 +19,6 @@ const (
 	InfoLevel
 	WarnLevel
 	ErrorLevel
-	FatalLevel
 )
 
 var levelNames = [...]string{
@@ -27,7 +26,6 @@ var levelNames = [...]string{
 	InfoLevel:  "info",
 	WarnLevel:  "warn",
 	ErrorLevel: "error",
-	FatalLevel: "fatal",
 }
 
 var levelStrings = map[string]Level{
@@ -36,7 +34,6 @@ var levelStrings = map[string]Level{
 	"warn":    WarnLevel,
 	"warning": WarnLevel,
 	"error":   ErrorLevel,
-	"fatal":   FatalLevel,
 }
 
 // String implementation.

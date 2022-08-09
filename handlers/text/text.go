@@ -33,7 +33,6 @@ var Colors = [...]int{
 	log.InfoLevel:  blue,
 	log.WarnLevel:  yellow,
 	log.ErrorLevel: red,
-	log.FatalLevel: red,
 }
 
 // Strings mapping.
@@ -42,7 +41,6 @@ var Strings = [...]string{
 	log.InfoLevel:  "INFO",
 	log.WarnLevel:  "WARN",
 	log.ErrorLevel: "ERROR",
-	log.FatalLevel: "FATAL",
 }
 
 // Handler implementation.
