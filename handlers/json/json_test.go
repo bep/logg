@@ -14,8 +14,8 @@ import (
 func TestJSONHandler(t *testing.T) {
 	var buf bytes.Buffer
 
-	l := logg.NewLogger(
-		logg.LoggerConfig{
+	l := logg.New(
+		logg.Options{
 			Level:   logg.LevelInfo,
 			Handler: json.New(&buf),
 			Clock:   clocks.Fixed(clocks.TimeCupFinalNorway1976),

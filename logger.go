@@ -62,18 +62,8 @@ func (f Fields) Fields() Fields {
 	return f
 }
 
-// The HandlerFunc type is an adapter to allow the use of ordinary functions as
-// log handlers. If f is a function with the appropriate signature,
-// HandlerFunc(f) is a Handler object that calls f.
-type HandlerFunc func(*Entry) error
-
-// HandleLog calls f(e).
-func (f HandlerFunc) HandleLog(e *Entry) error {
-	return f(e)
-}
-
-// LoggerConfig is the configuration used to create a logger.
-type LoggerConfig struct {
+// Options is the set of options used to configure a logger.
+type Options struct {
 	// Level is the minimum level to log at.
 	// If not set, defaults to InfoLevel.
 	Level Level
@@ -87,7 +77,7 @@ type LoggerConfig struct {
 }
 
 // New returns a new logger.
-func NewLogger(cfg LoggerConfig) Logger {
+func New(cfg Options) Logger {
 	if cfg.Handler == nil {
 		panic("handler cannot be nil")
 	}

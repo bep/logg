@@ -12,7 +12,7 @@ import (
 
 func TestTextHandler(t *testing.T) {
 	var buf bytes.Buffer
-	l := logg.NewLogger(logg.LoggerConfig{Level: logg.LevelInfo, Handler: text.New(&buf)})
+	l := logg.New(logg.Options{Level: logg.LevelInfo, Handler: text.New(&buf)})
 	info := l.WithLevel(logg.LevelInfo)
 
 	info.WithField("user", "tj").WithField("id", "123").Log(logg.String("hello"))

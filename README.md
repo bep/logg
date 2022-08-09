@@ -11,7 +11,7 @@ Main changes:
 * Make `Fields` into a slice to preserve log order.
 * Split the old `Interface` in two and remove all but one `Log` method (see below).
 * This allows for lazy creation of messages in `Log(fmt.Stringer)` and ignoring fields added in `LevelLogger`s with levels below the `Logger`s.
-* The pointer passed to `HandleLog` is not safe to use outside of that method, need to be cloned with `Clone` first if that's needed.
+* The pointer passed to `HandleLog` is not safe to use outside of the current log chain, and needs to be cloned with `Clone` first if that's needed.
 * See [Benchmarks](#benchmarks) for more info.
 
 > One can never have enough log libraries!

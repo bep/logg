@@ -13,7 +13,7 @@ import (
 
 func TestLogger_printf(t *testing.T) {
 	h := memory.New()
-	l := logg.NewLogger(logg.LoggerConfig{Level: logg.LevelInfo, Handler: h})
+	l := logg.New(logg.Options{Level: logg.LevelInfo, Handler: h})
 	a := l.WithLevel(logg.LevelInfo)
 
 	a.Log(logg.String("logged in Tobi"))
@@ -25,7 +25,7 @@ func TestLogger_printf(t *testing.T) {
 
 func TestLogger_levels(t *testing.T) {
 	h := memory.New()
-	l := logg.NewLogger(logg.LoggerConfig{Level: logg.LevelInfo, Handler: h})
+	l := logg.New(logg.Options{Level: logg.LevelInfo, Handler: h})
 
 	l.WithLevel(logg.LevelDebug).Log(logg.String("uploading"))
 	l.WithLevel(logg.LevelInfo).Log(logg.String("upload complete"))
@@ -39,7 +39,7 @@ func TestLogger_levels(t *testing.T) {
 
 func TestLogger_WithFields(t *testing.T) {
 	h := memory.New()
-	l := logg.NewLogger(logg.LoggerConfig{Level: logg.LevelInfo, Handler: h})
+	l := logg.New(logg.Options{Level: logg.LevelInfo, Handler: h})
 
 	info := l.WithLevel(logg.LevelInfo).WithFields(logg.Fields{{"file", "sloth.png"}})
 	info.WithLevel(logg.LevelDebug).Log(logg.String("uploading"))
@@ -55,7 +55,7 @@ func TestLogger_WithFields(t *testing.T) {
 
 func TestLogger_WithField(t *testing.T) {
 	h := memory.New()
-	l := logg.NewLogger(logg.LoggerConfig{Level: logg.LevelInfo, Handler: h})
+	l := logg.New(logg.Options{Level: logg.LevelInfo, Handler: h})
 
 	info := l.WithLevel(logg.LevelInfo).WithField("file", "sloth.png").WithField("user", "Tobi")
 	info.WithLevel(logg.LevelDebug).Log(logg.String("uploading"))
@@ -74,7 +74,7 @@ func TestLogger_HandlerFunc(t *testing.T) {
 	f := func(e *logg.Entry) error {
 		return h.HandleLog(e)
 	}
-	l := logg.NewLogger(logg.LoggerConfig{Level: logg.LevelInfo, Handler: logg.HandlerFunc(f)})
+	l := logg.New(logg.Options{Level: logg.LevelInfo, Handler: logg.HandlerFunc(f)})
 	info := l.WithLevel(logg.LevelInfo)
 
 	info.Log(logg.String("logged in Tobi"))
@@ -85,7 +85,7 @@ func TestLogger_HandlerFunc(t *testing.T) {
 }
 
 func BenchmarkLogger_small(b *testing.B) {
-	l := logg.NewLogger(logg.LoggerConfig{Level: logg.LevelInfo, Handler: handlers.Discard})
+	l := logg.New(logg.Options{Level: logg.LevelInfo, Handler: handlers.Discard})
 	info := l.WithLevel(logg.LevelInfo)
 
 	for i := 0; i < b.N; i++ {
@@ -94,7 +94,7 @@ func BenchmarkLogger_small(b *testing.B) {
 }
 
 func BenchmarkLogger_medium(b *testing.B) {
-	l := logg.NewLogger(logg.LoggerConfig{Level: logg.LevelInfo, Handler: handlers.Discard})
+	l := logg.New(logg.Options{Level: logg.LevelInfo, Handler: handlers.Discard})
 	info := l.WithLevel(logg.LevelInfo)
 
 	for i := 0; i < b.N; i++ {
@@ -107,7 +107,7 @@ func BenchmarkLogger_medium(b *testing.B) {
 }
 
 func BenchmarkLogger_large(b *testing.B) {
-	l := logg.NewLogger(logg.LoggerConfig{Level: logg.LevelInfo, Handler: handlers.Discard})
+	l := logg.New(logg.Options{Level: logg.LevelInfo, Handler: handlers.Discard})
 	info := l.WithLevel(logg.LevelInfo)
 
 	err := fmt.Errorf("boom")
@@ -131,7 +131,7 @@ func BenchmarkLogger_large(b *testing.B) {
 }
 
 func BenchmarkLogger_common_context(b *testing.B) {
-	l := logg.NewLogger(logg.LoggerConfig{Level: logg.LevelInfo, Handler: handlers.Discard})
+	l := logg.New(logg.Options{Level: logg.LevelInfo, Handler: handlers.Discard})
 	info := l.WithLevel(logg.LevelInfo)
 	for i := 0; i < 3; i++ {
 		info = info.WithField(fmt.Sprintf("context%d", i), "value")
@@ -143,7 +143,7 @@ func BenchmarkLogger_common_context(b *testing.B) {
 }
 
 func BenchmarkLogger_common_context_many_fields(b *testing.B) {
-	l := logg.NewLogger(logg.LoggerConfig{Level: logg.LevelInfo, Handler: handlers.Discard})
+	l := logg.New(logg.Options{Level: logg.LevelInfo, Handler: handlers.Discard})
 	info := l.WithLevel(logg.LevelInfo)
 	for i := 0; i < 42; i++ {
 		info = info.WithField(fmt.Sprintf("context%d", i), "value")
@@ -155,7 +155,7 @@ func BenchmarkLogger_common_context_many_fields(b *testing.B) {
 }
 
 func BenchmarkLogger_context_many_fields_duplicate_names_with_field(b *testing.B) {
-	l := logg.NewLogger(logg.LoggerConfig{Level: logg.LevelInfo, Handler: handlers.Discard})
+	l := logg.New(logg.Options{Level: logg.LevelInfo, Handler: handlers.Discard})
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
@@ -168,7 +168,7 @@ func BenchmarkLogger_context_many_fields_duplicate_names_with_field(b *testing.B
 }
 
 func BenchmarkLogger_context_many_fields_duplicate_names_with_fields(b *testing.B) {
-	l := logg.NewLogger(logg.LoggerConfig{Level: logg.LevelInfo, Handler: handlers.Discard})
+	l := logg.New(logg.Options{Level: logg.LevelInfo, Handler: handlers.Discard})
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
@@ -193,7 +193,7 @@ func BenchmarkLogger_levels(b *testing.B) {
 
 	b.Run("level not met", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
-			l := logg.NewLogger(logg.LoggerConfig{Level: logg.LevelError, Handler: handlers.Discard})
+			l := logg.New(logg.Options{Level: logg.LevelError, Handler: handlers.Discard})
 			error := l.WithLevel(logg.LevelInfo)
 			doWork(error)
 		}
@@ -201,7 +201,7 @@ func BenchmarkLogger_levels(b *testing.B) {
 
 	b.Run("level not met, one field", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
-			l := logg.NewLogger(logg.LoggerConfig{Level: logg.LevelError, Handler: handlers.Discard})
+			l := logg.New(logg.Options{Level: logg.LevelError, Handler: handlers.Discard})
 			info := l.WithLevel(logg.LevelInfo)
 			info = info.WithField("file", "sloth.png")
 			doWork(info)
@@ -210,7 +210,7 @@ func BenchmarkLogger_levels(b *testing.B) {
 
 	b.Run("level not met, many fields", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
-			l := logg.NewLogger(logg.LoggerConfig{Level: logg.LevelError, Handler: handlers.Discard})
+			l := logg.New(logg.Options{Level: logg.LevelError, Handler: handlers.Discard})
 			info := l.WithLevel(logg.LevelInfo)
 			info = info.WithField("file", "sloth.png")
 			for i := 0; i < 32; i++ {
@@ -222,7 +222,7 @@ func BenchmarkLogger_levels(b *testing.B) {
 
 	b.Run("level met", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
-			l := logg.NewLogger(logg.LoggerConfig{Level: logg.LevelInfo, Handler: handlers.Discard})
+			l := logg.New(logg.Options{Level: logg.LevelInfo, Handler: handlers.Discard})
 			info := l.WithLevel(logg.LevelInfo)
 			for j := 0; j < 10; j++ {
 				doWork(info)
@@ -232,7 +232,7 @@ func BenchmarkLogger_levels(b *testing.B) {
 
 	b.Run("level met, one field", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
-			l := logg.NewLogger(logg.LoggerConfig{Level: logg.LevelInfo, Handler: handlers.Discard})
+			l := logg.New(logg.Options{Level: logg.LevelInfo, Handler: handlers.Discard})
 			info := l.WithLevel(logg.LevelInfo)
 			info = info.WithField("file", "sloth.png")
 			doWork(info)
@@ -241,7 +241,7 @@ func BenchmarkLogger_levels(b *testing.B) {
 
 	b.Run("level met, many fields", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
-			l := logg.NewLogger(logg.LoggerConfig{Level: logg.LevelInfo, Handler: handlers.Discard})
+			l := logg.New(logg.Options{Level: logg.LevelInfo, Handler: handlers.Discard})
 			info := l.WithLevel(logg.LevelInfo)
 			info = info.WithField("file", "sloth.png")
 			for i := 0; i < 32; i++ {

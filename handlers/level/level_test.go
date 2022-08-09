@@ -12,8 +12,8 @@ import (
 
 func TestLevel(t *testing.T) {
 	h := memory.New()
-	l := logg.NewLogger(
-		logg.LoggerConfig{Level: logg.LevelError, Handler: level.New(h, logg.LevelError)},
+	l := logg.New(
+		logg.Options{Level: logg.LevelError, Handler: level.New(h, logg.LevelError)},
 	)
 
 	info := l.WithLevel(logg.LevelInfo)
