@@ -92,7 +92,7 @@ func NewLogger(cfg LoggerConfig) Logger {
 		panic("handler cannot be nil")
 	}
 
-	if cfg.Level <= 0 || cfg.Level > ErrorLevel {
+	if cfg.Level <= 0 || cfg.Level > LevelError {
 		panic("log level is out of range")
 	}
 
@@ -101,7 +101,7 @@ func NewLogger(cfg LoggerConfig) Logger {
 	}
 
 	if cfg.Level == 0 {
-		cfg.Level = InfoLevel
+		cfg.Level = LevelInfo
 	}
 
 	return &logger{

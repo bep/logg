@@ -29,18 +29,18 @@ const (
 
 // Colors mapping.
 var Colors = [...]int{
-	logg.DebugLevel: gray,
-	logg.InfoLevel:  blue,
-	logg.WarnLevel:  yellow,
-	logg.ErrorLevel: red,
+	logg.LevelDebug: gray,
+	logg.LevelInfo:  blue,
+	logg.LevelWarn:  yellow,
+	logg.LevelError: red,
 }
 
 // Strings mapping.
 var Strings = [...]string{
-	logg.DebugLevel: "DEBUG",
-	logg.InfoLevel:  "INFO",
-	logg.WarnLevel:  "WARN",
-	logg.ErrorLevel: "ERROR",
+	logg.LevelDebug: "DEBUG",
+	logg.LevelInfo:  "INFO",
+	logg.LevelWarn:  "WARN",
+	logg.LevelError: "ERROR",
 }
 
 // Handler implementation.

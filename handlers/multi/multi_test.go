@@ -14,15 +14,15 @@ func TestMulti(t *testing.T) {
 	b := memory.New()
 
 	l := logg.NewLogger(logg.LoggerConfig{
-		Level:   logg.InfoLevel,
+		Level:   logg.LevelInfo,
 		Handler: multi.New(a, b),
 	})
 
-	info := l.WithLevel(logg.InfoLevel)
+	info := l.WithLevel(logg.LevelInfo)
 
 	info.WithField("user", "tj").WithField("id", "123").Log(logg.String("hello"))
 	info.Log(logg.String("world"))
-	info.WithLevel(logg.ErrorLevel).Log(logg.String("boom"))
+	info.WithLevel(logg.LevelError).Log(logg.String("boom"))
 
 	qt.Assert(t, a.Entries, qt.HasLen, 3)
 	qt.Assert(t, b.Entries, qt.HasLen, 3)

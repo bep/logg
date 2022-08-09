@@ -14,26 +14,26 @@ type Level int
 
 // Log levels.
 const (
-	InvalidLevel Level = iota
-	DebugLevel
-	InfoLevel
-	WarnLevel
-	ErrorLevel
+	LevelInvalid Level = iota
+	LevelDebug
+	LevelInfo
+	LevelWarn
+	LevelError
 )
 
 var levelNames = [...]string{
-	DebugLevel: "debug",
-	InfoLevel:  "info",
-	WarnLevel:  "warn",
-	ErrorLevel: "error",
+	LevelDebug: "debug",
+	LevelInfo:  "info",
+	LevelWarn:  "warn",
+	LevelError: "error",
 }
 
 var levelStrings = map[string]Level{
-	"debug":   DebugLevel,
-	"info":    InfoLevel,
-	"warn":    WarnLevel,
-	"warning": WarnLevel,
-	"error":   ErrorLevel,
+	"debug":   LevelDebug,
+	"info":    LevelInfo,
+	"warn":    LevelWarn,
+	"warning": LevelWarn,
+	"error":   LevelError,
 }
 
 // String implementation.
@@ -61,7 +61,7 @@ func (l *Level) UnmarshalJSON(b []byte) error {
 func ParseLevel(s string) (Level, error) {
 	l, ok := levelStrings[strings.ToLower(s)]
 	if !ok {
-		return InvalidLevel, ErrInvalidLevel
+		return LevelInvalid, ErrInvalidLevel
 	}
 
 	return l, nil

@@ -16,16 +16,16 @@ func TestJSONHandler(t *testing.T) {
 
 	l := logg.NewLogger(
 		logg.LoggerConfig{
-			Level:   logg.InfoLevel,
+			Level:   logg.LevelInfo,
 			Handler: json.New(&buf),
 			Clock:   clocks.Fixed(clocks.TimeCupFinalNorway1976),
 		})
 
-	info := l.WithLevel(logg.InfoLevel)
+	info := l.WithLevel(logg.LevelInfo)
 
 	info.WithField("user", "tj").WithField("id", "123").Log(logg.String("hello"))
 	info.Log(logg.String("world"))
-	info.WithLevel(logg.ErrorLevel).Log(logg.String("boom"))
+	info.WithLevel(logg.LevelError).Log(logg.String("boom"))
 
 	expected := "{\"level\":\"info\",\"timestamp\":\"1976-10-24T12:15:02.127686412Z\",\"fields\":[{\"name\":\"user\",\"value\":\"tj\"},{\"name\":\"id\",\"value\":\"123\"}],\"message\":\"hello\"}\n{\"level\":\"info\",\"timestamp\":\"1976-10-24T12:15:02.127686412Z\",\"message\":\"world\"}\n{\"level\":\"error\",\"timestamp\":\"1976-10-24T12:15:02.127686412Z\",\"message\":\"boom\"}\n"
 

@@ -13,7 +13,7 @@ import (
 
 func TestEntry_WithFields(t *testing.T) {
 	h := memory.New()
-	a := logg.NewLogger(logg.LoggerConfig{Handler: h, Level: logg.InfoLevel}).WithLevel(logg.InfoLevel)
+	a := logg.NewLogger(logg.LoggerConfig{Handler: h, Level: logg.LevelInfo}).WithLevel(logg.LevelInfo)
 
 	b := a.WithFields(logg.Fields{{"foo", "bar"}})
 
@@ -28,13 +28,13 @@ func TestEntry_WithFields(t *testing.T) {
 
 	qt.Assert(t, "upload", qt.Equals, e.Message)
 	qt.Assert(t, logg.Fields{{"foo", "hello"}, {"bar", "world"}}, qt.DeepEquals, e.Fields)
-	qt.Assert(t, logg.InfoLevel, qt.Equals, e.Level)
+	qt.Assert(t, logg.LevelInfo, qt.Equals, e.Level)
 	qt.Assert(t, time.Now().IsZero(), qt.IsFalse)
 }
 
 func TestEntry_WithField(t *testing.T) {
 	h := memory.New()
-	a := logg.NewLogger(logg.LoggerConfig{Handler: h, Level: logg.InfoLevel}).WithLevel(logg.InfoLevel)
+	a := logg.NewLogger(logg.LoggerConfig{Handler: h, Level: logg.LevelInfo}).WithLevel(logg.LevelInfo)
 	b := a.WithField("foo", "baz").WithField("foo", "bar")
 	b.Log(logg.String("upload"))
 	qt.Assert(t, a.Fields, qt.IsNil)
@@ -42,14 +42,14 @@ func TestEntry_WithField(t *testing.T) {
 }
 
 func TestEntry_WithError(t *testing.T) {
-	a := logg.NewLogger(logg.LoggerConfig{Handler: handlers.Discard, Level: logg.InfoLevel}).WithLevel(logg.InfoLevel)
+	a := logg.NewLogger(logg.LoggerConfig{Handler: handlers.Discard, Level: logg.LevelInfo}).WithLevel(logg.LevelInfo)
 	b := a.WithError(fmt.Errorf("boom"))
 	qt.Assert(t, a.Fields, qt.IsNil)
 	qt.Assert(t, b.Fields, qt.DeepEquals, logg.Fields{{"error", "boom"}})
 }
 
 func TestEntry_WithError_fields(t *testing.T) {
-	a := logg.NewLogger(logg.LoggerConfig{Handler: handlers.Discard, Level: logg.InfoLevel}).WithLevel(logg.InfoLevel)
+	a := logg.NewLogger(logg.LoggerConfig{Handler: handlers.Discard, Level: logg.LevelInfo}).WithLevel(logg.LevelInfo)
 	b := a.WithError(errFields("boom"))
 	qt.Assert(t, a.Fields, qt.IsNil)
 	qt.Assert(t,
@@ -61,14 +61,14 @@ func TestEntry_WithError_fields(t *testing.T) {
 }
 
 func TestEntry_WithError_nil(t *testing.T) {
-	a := logg.NewLogger(logg.LoggerConfig{Handler: handlers.Discard, Level: logg.InfoLevel}).WithLevel(logg.InfoLevel)
+	a := logg.NewLogger(logg.LoggerConfig{Handler: handlers.Discard, Level: logg.LevelInfo}).WithLevel(logg.LevelInfo)
 	b := a.WithError(nil)
 	qt.Assert(t, a.Fields, qt.IsNil)
 	qt.Assert(t, b.Fields, qt.IsNil)
 }
 
 func TestEntry_WithDuration(t *testing.T) {
-	a := logg.NewLogger(logg.LoggerConfig{Handler: handlers.Discard, Level: logg.InfoLevel}).WithLevel(logg.InfoLevel)
+	a := logg.NewLogger(logg.LoggerConfig{Handler: handlers.Discard, Level: logg.LevelInfo}).WithLevel(logg.LevelInfo)
 	b := a.WithDuration(time.Second * 2)
 	qt.Assert(t, b.Fields, qt.DeepEquals, logg.Fields{{"duration", int64(2000)}})
 }

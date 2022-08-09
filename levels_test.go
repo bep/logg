@@ -13,11 +13,11 @@ func TestParseLevel(t *testing.T) {
 		Level  Level
 		Num    int
 	}{
-		{"debug", DebugLevel, 0},
-		{"info", InfoLevel, 1},
-		{"warn", WarnLevel, 2},
-		{"warning", WarnLevel, 3},
-		{"error", ErrorLevel, 4},
+		{"debug", LevelDebug, 0},
+		{"info", LevelInfo, 1},
+		{"warn", LevelWarn, 2},
+		{"warning", LevelWarn, 3},
+		{"error", LevelError, 4},
 	}
 
 	for _, c := range cases {
@@ -31,14 +31,14 @@ func TestParseLevel(t *testing.T) {
 	t.Run("invalid", func(t *testing.T) {
 		l, err := ParseLevel("something")
 		qt.Assert(t, err, qt.Equals, ErrInvalidLevel)
-		qt.Assert(t, l, qt.Equals, InvalidLevel)
+		qt.Assert(t, l, qt.Equals, LevelInvalid)
 	})
 }
 
 func TestLevel_MarshalJSON(t *testing.T) {
 	e := Entry{
 		Message: "hello",
-		Level:   InfoLevel,
+		Level:   LevelInfo,
 	}
 
 	expect := `{"level":"info","timestamp":"0001-01-01T00:00:00Z","message":"hello"}`
@@ -54,5 +54,5 @@ func TestLevel_UnmarshalJSON(t *testing.T) {
 
 	err := json.Unmarshal([]byte(s), e)
 	qt.Assert(t, err, qt.IsNil)
-	qt.Assert(t, e.Level, qt.Equals, InfoLevel)
+	qt.Assert(t, e.Level, qt.Equals, LevelInfo)
 }

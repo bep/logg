@@ -19,18 +19,18 @@ var bold = color.New(color.Bold)
 
 // Colors mapping.
 var Colors = [...]*color.Color{
-	logg.DebugLevel: color.New(color.FgWhite),
-	logg.InfoLevel:  color.New(color.FgBlue),
-	logg.WarnLevel:  color.New(color.FgYellow),
-	logg.ErrorLevel: color.New(color.FgRed),
+	logg.LevelDebug: color.New(color.FgWhite),
+	logg.LevelInfo:  color.New(color.FgBlue),
+	logg.LevelWarn:  color.New(color.FgYellow),
+	logg.LevelError: color.New(color.FgRed),
 }
 
 // Strings mapping.
 var Strings = [...]string{
-	logg.DebugLevel: "•",
-	logg.InfoLevel:  "•",
-	logg.WarnLevel:  "•",
-	logg.ErrorLevel: "⨯",
+	logg.LevelDebug: "•",
+	logg.LevelInfo:  "•",
+	logg.LevelWarn:  "•",
+	logg.LevelError: "⨯",
 }
 
 // Handler implementation.
