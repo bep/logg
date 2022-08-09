@@ -3,7 +3,6 @@ package log
 import (
 	"fmt"
 	stdlog "log"
-	"os"
 	"time"
 
 	"github.com/bep/clocks"
@@ -93,7 +92,7 @@ func NewLogger(cfg LoggerConfig) Logger {
 		panic("handler cannot be nil")
 	}
 
-	if cfg.Level <= 0 || cfg.Level > FatalLevel {
+	if cfg.Level <= 0 || cfg.Level > ErrorLevel {
 		panic("log level is out of range")
 	}
 
@@ -167,7 +166,4 @@ func (l *logger) log(e *Entry, s fmt.Stringer) {
 		stdlog.Printf("error logging: %s", err)
 	}
 
-	if e.Level == FatalLevel {
-		os.Exit(1)
-	}
 }

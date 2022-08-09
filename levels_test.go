@@ -18,7 +18,6 @@ func TestParseLevel(t *testing.T) {
 		{"warn", WarnLevel, 2},
 		{"warning", WarnLevel, 3},
 		{"error", ErrorLevel, 4},
-		{"fatal", FatalLevel, 5},
 	}
 
 	for _, c := range cases {
