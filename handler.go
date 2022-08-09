@@ -7,7 +7,7 @@ package log
 // It is left up to Handlers to implement thread-safety.
 type Handler interface {
 	// HandleLog is invoked for each log event.
-	// Note that i e is going to be used after the call to HandleLog returns,
-	// it must be cloned with e.Clone().
+	// Note that if the Entry is going to be used after the call to HandleLog returns,
+	// it must be cloned with Clone().
 	HandleLog(e *Entry) error
 }

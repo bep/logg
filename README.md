@@ -9,10 +9,9 @@ Main changes:
 
 * Trim unneeded dependencies.
 * Make `Fields` into a slice to preserve log order.
-* Split `Entry` into `Entry` and `EntryFields`. This is easier to reason about and more effective.
 * Split the old `Interface` in two and remove all but one `Log` method (see below).
-* This allows for lazy creation of messages in `Log(fmt.Stringer)` and ignoring fields added in `LevelLogger`s with levels below the `Logger`'s.
-
+* This allows for lazy creation of messages in `Log(fmt.Stringer)` and ignoring fields added in `LevelLogger`s with levels below the `Logger`s.
+* The pointer passed to `HandleLog` is not safe to use outside of that method, need to be cloned with `Clone` first if that's needed.
 
 ```go
 // Logger is the main interface for the logger.

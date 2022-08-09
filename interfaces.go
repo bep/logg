@@ -11,7 +11,7 @@ type Logger interface {
 	WithLevel(Level) *Entry
 }
 
-// LevelLogger
+// LevelLogger is the logger at a given level.
 type LevelLogger interface {
 	// Log logs a message at the given level using the string from calling s.String().
 	// Note that s.String() will not be called if the level is not enabled.
