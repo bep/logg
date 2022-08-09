@@ -2,11 +2,10 @@ module github.com/bep/log/benchmarks
 
 go 1.18
 
-replace github.com/bep/log => ../
+replace github.com/bep/logg => ../
 
 require (
 	github.com/apex/log v1.9.0
-	github.com/bep/log v0.0.0-00010101000000-000000000000
 	github.com/go-kit/log v0.2.0
 	github.com/rs/zerolog v1.26.0
 	github.com/sirupsen/logrus v1.8.1
@@ -18,6 +17,7 @@ require (
 require (
 	github.com/benbjohnson/clock v1.2.0 // indirect
 	github.com/bep/clocks v0.5.0 // indirect
+	github.com/bep/logg v0.0.0-20220809094309-f3eda2566f97
 	github.com/go-logfmt/logfmt v0.5.1 // indirect
 	github.com/go-stack/stack v1.8.1 // indirect
 	github.com/mattn/go-colorable v0.1.12 // indirect

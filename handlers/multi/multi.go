@@ -2,23 +2,23 @@
 package multi
 
 import (
-	"github.com/bep/log"
+	"github.com/bep/logg"
 )
 
 // Handler implementation.
 type Handler struct {
-	Handlers []log.Handler
+	Handlers []logg.Handler
 }
 
 // New handler.
-func New(h ...log.Handler) *Handler {
+func New(h ...logg.Handler) *Handler {
 	return &Handler{
 		Handlers: h,
 	}
 }
 
-// HandleLog implements log.Handler.
-func (h *Handler) HandleLog(e *log.Entry) error {
+// HandleLog implements logg.Handler.
+func (h *Handler) HandleLog(e *logg.Entry) error {
 	for _, handler := range h.Handlers {
 		// TODO(tj): maybe just write to stderr here, definitely not ideal
 		// to miss out logging to a more critical handler if something

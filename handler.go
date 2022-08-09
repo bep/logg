@@ -1,4 +1,4 @@
-package log
+package logg
 
 // Handler is used to handle log events, outputting them to
 // stdio or sending them to remote services. See the "handlers"

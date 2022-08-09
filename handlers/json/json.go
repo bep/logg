@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"io"
 
-	"github.com/bep/log"
+	"github.com/bep/logg"
 )
 
 type Handler struct {
@@ -22,8 +22,8 @@ func New(w io.Writer) *Handler {
 	}
 }
 
-// HandleLog implements log.Handler.
-func (h *Handler) HandleLog(e *log.Entry) error {
+// HandleLog implements logg.Handler.
+func (h *Handler) HandleLog(e *logg.Entry) error {
 	enc := json.NewEncoder(h.w)
 	enc.SetEscapeHTML(false)
 	return enc.Encode(e)

@@ -25,7 +25,7 @@ import (
 	"log"
 	"testing"
 
-	logn "github.com/bep/log"
+	"github.com/bep/logg"
 )
 
 func BenchmarkDisabledWithoutFields(b *testing.B) {
@@ -39,12 +39,12 @@ func BenchmarkDisabledWithoutFields(b *testing.B) {
 			}
 		})
 	})
-	b.Run("bep/log", func(b *testing.B) {
-		logger := newDisabledLognLog()
+	b.Run("bep/logg", func(b *testing.B) {
+		logger := newDisabledLoggLog()
 		b.ResetTimer()
 		b.RunParallel(func(pb *testing.PB) {
 			for pb.Next() {
-				message := logn.NewStringFunc(func() string { return getMessage(0) })
+				message := logg.NewStringFunc(func() string { return getMessage(0) })
 				logger.Log(message)
 			}
 		})
@@ -80,12 +80,12 @@ func BenchmarkDisabledAccumulatedContext(b *testing.B) {
 			}
 		})
 	})
-	b.Run("bep/log", func(b *testing.B) {
-		logger := newDisabledLognLog().WithFields(fakeLognFields())
+	b.Run("bep/logg", func(b *testing.B) {
+		logger := newDisabledLoggLog().WithFields(fakeLognFields())
 		b.ResetTimer()
 		b.RunParallel(func(pb *testing.PB) {
 			for pb.Next() {
-				message := logn.NewStringFunc(func() string { return getMessage(0) })
+				message := logg.NewStringFunc(func() string { return getMessage(0) })
 				logger.Log(message)
 			}
 		})
@@ -121,12 +121,12 @@ func BenchmarkDisabledAddingFields(b *testing.B) {
 			}
 		})
 	})
-	b.Run("bep/log", func(b *testing.B) {
-		logger := newDisabledLognLog()
+	b.Run("bep/logg", func(b *testing.B) {
+		logger := newDisabledLoggLog()
 		b.ResetTimer()
 		b.RunParallel(func(pb *testing.PB) {
 			for pb.Next() {
-				message := logn.NewStringFunc(func() string { return getMessage(0) })
+				message := logg.NewStringFunc(func() string { return getMessage(0) })
 				logger.WithFields(fakeLognFields()).Log(message)
 			}
 		})
@@ -162,12 +162,12 @@ func BenchmarkWithoutFields(b *testing.B) {
 			}
 		})
 	})
-	b.Run("bep/log", func(b *testing.B) {
-		logger := newLognLog()
+	b.Run("bep/logg", func(b *testing.B) {
+		logger := newLoggLog()
 		b.ResetTimer()
 		b.RunParallel(func(pb *testing.PB) {
 			for pb.Next() {
-				message := logn.NewStringFunc(func() string { return getMessage(0) })
+				message := logg.NewStringFunc(func() string { return getMessage(0) })
 				logger.Log(message)
 			}
 		})
@@ -259,12 +259,12 @@ func BenchmarkAccumulatedContext(b *testing.B) {
 			}
 		})
 	})
-	b.Run("bep/log", func(b *testing.B) {
-		logger := newLognLog().WithFields(fakeLognFields())
+	b.Run("bep/logg", func(b *testing.B) {
+		logger := newLoggLog().WithFields(fakeLognFields())
 		b.ResetTimer()
 		b.RunParallel(func(pb *testing.PB) {
 			for pb.Next() {
-				message := logn.NewStringFunc(func() string { return getMessage(0) })
+				message := logg.NewStringFunc(func() string { return getMessage(0) })
 				logger.Log(message)
 			}
 		})
@@ -338,12 +338,12 @@ func BenchmarkAddingFields(b *testing.B) {
 			}
 		})
 	})
-	b.Run("bep/log", func(b *testing.B) {
-		logger := newLognLog()
+	b.Run("bep/logg", func(b *testing.B) {
+		logger := newLoggLog()
 		b.ResetTimer()
 		b.RunParallel(func(pb *testing.PB) {
 			for pb.Next() {
-				message := logn.NewStringFunc(func() string { return getMessage(0) })
+				message := logg.NewStringFunc(func() string { return getMessage(0) })
 				logger.WithFields(fakeLognFields()).Log(message)
 			}
 		})

@@ -5,13 +5,13 @@ package memory
 import (
 	"sync"
 
-	"github.com/bep/log"
+	"github.com/bep/logg"
 )
 
 // Handler implementation.
 type Handler struct {
 	mu      sync.Mutex
-	Entries []*log.Entry
+	Entries []*logg.Entry
 }
 
 // New handler.
@@ -19,8 +19,8 @@ func New() *Handler {
 	return &Handler{}
 }
 
-// HandleLog implements log.Handler.
-func (h *Handler) HandleLog(e *log.Entry) error {
+// HandleLog implements logg.Handler.
+func (h *Handler) HandleLog(e *logg.Entry) error {
 	h.mu.Lock()
 	defer h.mu.Unlock()
 	h.Entries = append(h.Entries, e.Clone())

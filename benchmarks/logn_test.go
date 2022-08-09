@@ -23,40 +23,40 @@ package benchmarks
 import (
 	"io"
 
-	"github.com/bep/log"
-	"github.com/bep/log/handlers/json"
+	"github.com/bep/logg"
+	"github.com/bep/logg/handlers/json"
 )
 
-func newDisabledLognLog() log.LevelLogger {
-	logger := log.NewLogger(log.LoggerConfig{
+func newDisabledLoggLog() logg.LevelLogger {
+	logger := logg.NewLogger(logg.LoggerConfig{
 		Handler: json.New(io.Discard),
-		Level:   log.ErrorLevel,
+		Level:   logg.ErrorLevel,
 	})
-	return logger.WithLevel(log.InfoLevel)
+	return logger.WithLevel(logg.InfoLevel)
 }
 
-func newLognLog() log.LevelLogger {
-	logger := log.NewLogger(log.LoggerConfig{
+func newLoggLog() logg.LevelLogger {
+	logger := logg.NewLogger(logg.LoggerConfig{
 		Handler: json.New(io.Discard),
-		Level:   log.DebugLevel,
+		Level:   logg.DebugLevel,
 	})
 
-	return logger.WithLevel(log.DebugLevel)
+	return logger.WithLevel(logg.DebugLevel)
 }
 
-func fakeLognFields() log.FieldsFunc {
-	return func() log.Fields {
-		return log.Fields{
-			{"int", _tenInts[0]},
-			{"ints", _tenInts},
-			{"string", _tenStrings[0]},
-			{"strings", _tenStrings},
-			{"time", _tenTimes[0]},
-			{"times", _tenTimes},
-			{"user1", _oneUser},
-			{"user2", _oneUser},
-			{"users", _tenUsers},
-			{"error", errExample},
+func fakeLognFields() logg.FieldsFunc {
+	return func() logg.Fields {
+		return logg.Fields{
+			{Name: "int", Value: _tenInts[0]},
+			{Name: "ints", Value: _tenInts},
+			{Name: "string", Value: _tenStrings[0]},
+			{Name: "strings", Value: _tenStrings},
+			{Name: "time", Value: _tenTimes[0]},
+			{Name: "times", Value: _tenTimes},
+			{Name: "user1", Value: _oneUser},
+			{Name: "user2", Value: _oneUser},
+			{Name: "users", Value: _tenUsers},
+			{Name: "error", Value: errExample},
 		}
 	}
 }

@@ -1,8 +1,8 @@
 package handlers
 
-import "github.com/bep/log"
+import "github.com/bep/logg"
 
 // Discard is a no-op handler that discards all log messages.
-var Discard = log.HandlerFunc(func(e *log.Entry) error {
+var Discard = logg.HandlerFunc(func(e *logg.Entry) error {
 	return nil
 })

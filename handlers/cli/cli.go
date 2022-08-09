@@ -7,7 +7,7 @@ import (
 	"os"
 	"sync"
 
-	"github.com/bep/log"
+	"github.com/bep/logg"
 	"github.com/fatih/color"
 	colorable "github.com/mattn/go-colorable"
 )
@@ -19,18 +19,18 @@ var bold = color.New(color.Bold)
 
 // Colors mapping.
 var Colors = [...]*color.Color{
-	log.DebugLevel: color.New(color.FgWhite),
-	log.InfoLevel:  color.New(color.FgBlue),
-	log.WarnLevel:  color.New(color.FgYellow),
-	log.ErrorLevel: color.New(color.FgRed),
+	logg.DebugLevel: color.New(color.FgWhite),
+	logg.InfoLevel:  color.New(color.FgBlue),
+	logg.WarnLevel:  color.New(color.FgYellow),
+	logg.ErrorLevel: color.New(color.FgRed),
 }
 
 // Strings mapping.
 var Strings = [...]string{
-	log.DebugLevel: "•",
-	log.InfoLevel:  "•",
-	log.WarnLevel:  "•",
-	log.ErrorLevel: "⨯",
+	logg.DebugLevel: "•",
+	logg.InfoLevel:  "•",
+	logg.WarnLevel:  "•",
+	logg.ErrorLevel: "⨯",
 }
 
 // Handler implementation.
@@ -55,8 +55,8 @@ func New(w io.Writer) *Handler {
 	}
 }
 
-// HandleLog implements log.Handler.
-func (h *Handler) HandleLog(e *log.Entry) error {
+// HandleLog implements logg.Handler.
+func (h *Handler) HandleLog(e *logg.Entry) error {
 	color := Colors[e.Level]
 	level := Strings[e.Level]
 

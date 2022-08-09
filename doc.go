@@ -1,4 +1,4 @@
 /*
-Package log implements a simple structured logging API.
+package logg implements a simple structured logging API.
 */
-package log
+package logg

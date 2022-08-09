@@ -1,7 +1,7 @@
 
-[![Tests on Linux, MacOS and Windows](https://github.com/bep/log/workflows/Test/badge.svg)](https://github.com/bep/log/actions?query=workflow:Test)
-[![Go Report Card](https://goreportcard.com/badge/github.com/bep/log)](https://goreportcard.com/report/github.com/bep/log)
-[![GoDoc](https://godoc.org/github.com/bep/log?status.svg)](https://godoc.org/github.com/bep/log)
+[![Tests on Linux, MacOS and Windows](https://github.com/bep/logg/workflows/Test/badge.svg)](https://github.com/bep/logg/actions?query=workflow:Test)
+[![Go Report Card](https://goreportcard.com/badge/github.com/bep/logg)](https://goreportcard.com/report/github.com/bep/logg)
+[![GoDoc](https://godoc.org/github.com/bep/logg?status.svg)](https://godoc.org/github.com/bep/logg)
 
 This is a fork of the exellent [Apex Log](https://github.com/apex/log) library.
 

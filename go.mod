@@ -1,4 +1,4 @@
-module github.com/bep/log
+module github.com/bep/logg
 
 go 1.18
 

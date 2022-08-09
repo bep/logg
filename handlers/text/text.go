@@ -8,7 +8,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/bep/log"
+	"github.com/bep/logg"
 )
 
 // Default handler outputting to stderr.
@@ -29,18 +29,18 @@ const (
 
 // Colors mapping.
 var Colors = [...]int{
-	log.DebugLevel: gray,
-	log.InfoLevel:  blue,
-	log.WarnLevel:  yellow,
-	log.ErrorLevel: red,
+	logg.DebugLevel: gray,
+	logg.InfoLevel:  blue,
+	logg.WarnLevel:  yellow,
+	logg.ErrorLevel: red,
 }
 
 // Strings mapping.
 var Strings = [...]string{
-	log.DebugLevel: "DEBUG",
-	log.InfoLevel:  "INFO",
-	log.WarnLevel:  "WARN",
-	log.ErrorLevel: "ERROR",
+	logg.DebugLevel: "DEBUG",
+	logg.InfoLevel:  "INFO",
+	logg.WarnLevel:  "WARN",
+	logg.ErrorLevel: "ERROR",
 }
 
 // Handler implementation.
@@ -56,8 +56,8 @@ func New(w io.Writer) *Handler {
 	}
 }
 
-// HandleLog implements log.Handler.
-func (h *Handler) HandleLog(e *log.Entry) error {
+// HandleLog implements logg.Handler.
+func (h *Handler) HandleLog(e *logg.Entry) error {
 	color := Colors[e.Level]
 	level := Strings[e.Level]
 
