@@ -19,6 +19,8 @@ type Entry struct {
 	Timestamp time.Time `json:"timestamp"`
 	Fields    Fields    `json:"fields,omitempty"`
 	Message   string    `json:"message"`
+
+	fieldsAddedCounter int
 }
 
 // NewEntry returns a new entry for `log`.
@@ -38,7 +40,15 @@ func (e *Entry) WithFields(fielder Fielder) *Entry {
 		return e
 	}
 	x := *e
-	x.Fields = append(x.Fields, fielder.Fields()...)
+	fields := fielder.Fields()
+	x.fieldsAddedCounter += len(fields)
+	x.Fields = append(x.Fields, fields...)
+	if x.fieldsAddedCounter > 100 {
+		// This operation will eventually also be performed on the final entry,
+		// do it here to avoid the slice to grow indefinitely.
+		x.mergeFields()
+		x.fieldsAddedCounter = 0
+	}
 	return &x
 }
 
@@ -114,27 +124,35 @@ func (e *Entry) reset() {
 	e.Timestamp = time.Time{}
 }
 
+// Remove any early entries with the same name.
+func (e *Entry) mergeFields() {
+	n := 0
+	for i, f := range e.Fields {
+		keep := true
+		for j := i + 1; j < len(e.Fields); j++ {
+			if e.Fields[j].Name == f.Name {
+				keep = false
+				break
+			}
+		}
+		if keep {
+			e.Fields[n] = f
+			n++
+		}
+	}
+	e.Fields = e.Fields[:n]
+}
+
 // finalize populates dst with Level and  Fields merged from e and Message and Timestamp set.
 func (e *Entry) finalize(dst *Entry, msg string) {
 	dst.Message = msg
 	dst.Timestamp = e.logger.Clock.Now()
 	dst.Level = e.Level
-
-	// There mau be fields logged with the same name, keep the latest.
-	for i := len(e.Fields) - 1; i >= 0; i-- {
-		f := e.Fields[i]
-		var seen bool
-		for _, f2 := range dst.Fields {
-			if f.Name == f2.Name {
-				seen = true
-				break
-			}
-		}
-		if !seen {
-			// Insert first.
-			dst.Fields = append(dst.Fields, Field{})
-			copy(dst.Fields[1:], dst.Fields[:])
-			dst.Fields[0] = f
-		}
+	if cap(dst.Fields) < len(e.Fields) {
+		dst.Fields = make(Fields, len(e.Fields))
+	} else {
+		dst.Fields = dst.Fields[:len(e.Fields)]
 	}
+	copy(dst.Fields, e.Fields)
+	dst.mergeFields()
 }
