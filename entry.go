@@ -1,7 +1,6 @@
 package log
 
 import (
-	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
@@ -16,26 +15,10 @@ var (
 type Entry struct {
 	logger *logger
 
-	Timestamp time.Time `json:"timestamp"`
 	Level     Level     `json:"level"`
-	Fields    Fields    `json:"-"`
+	Timestamp time.Time `json:"timestamp"`
+	Fields    Fields    `json:"fields,omitempty"`
 	Message   string    `json:"message"`
-}
-
-func (e Entry) MarshalJSON() ([]byte, error) {
-	fields := make(map[string]any)
-	for _, f := range e.Fields {
-		fields[f.Name] = f.Value
-	}
-
-	type EntryAlias Entry
-	return json.Marshal(&struct {
-		Fields map[string]any `json:"fields"`
-		EntryAlias
-	}{
-		Fields:     fields,
-		EntryAlias: (EntryAlias)(e),
-	})
 }
 
 // NewEntry returns a new entry for `log`.
