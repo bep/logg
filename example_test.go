@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/bep/logg"
 	"github.com/bep/logg/handlers/text"
@@ -35,13 +36,13 @@ func Example() {
 	// INFO uploaded user=foo id=123 file=morejokes.txt
 }
 
-func Example_lazyevaluation() {
+func Example_lazy_evaluation() {
 	var buff bytes.Buffer
 	// Create a new logger.
 	l := logg.New(
 		logg.Options{
 			Level:   logg.LevelError,
-			Handler: text.New(&buff, text.Options{Separator: " "}),
+			Handler: text.New(&buff, text.Options{Separator: "|"}),
 		},
 	)
 
@@ -53,30 +54,30 @@ func Example_lazyevaluation() {
 
 	// Simulate a busy loop.
 	for i := 0; i < 999; i++ {
-		infoLogger.WithFields(
+		ctx := infoLogger.WithFields(
 			logg.NewFieldsFunc(
 				// This func will never be invoked with the current logger's level.
 				func() logg.Fields {
 					return logg.Fields{
-						{"field", strings.Repeat("x", 99)},
+						{"field", strings.Repeat("x", 9999)},
 					}
 
 				}),
 		)
-		infoLogger.Log(logg.NewStringFunc(
+		ctx.Log(logg.NewStringFunc(
 			// This func will never be invoked with the current logger's level.
 			func() string {
-				return "log message: " + strings.Repeat("x", 99)
+				return "log message: " + strings.Repeat("x", 9999)
 			},
 		))
 
 	}
 
-	errorLogger.Log(logg.String("something failed"))
+	errorLogger.WithDuration(32 * time.Second).Log(logg.String("something took too long"))
 
 	fmt.Print(buff.String())
 
 	// Output:
-	// ERROR something failed
+	// ERROR|something took too long|duration=32000
 
 }
