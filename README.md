@@ -14,6 +14,11 @@ Main changes:
 * The pointer passed to `HandleLog` is not safe to use outside of the current log chain, and needs to be cloned with `Clone` first if that's needed.
 * See [Benchmarks](#benchmarks) for more info.
 
+This is probably the very fastest structurd log library when logging is disabled:
+
+<img width="492" alt="image" src="https://user-images.githubusercontent.com/394382/184383985-265a4b0e-ee36-405e-9dc1-4686d0cad57a.png">
+
+
 > One can never have enough log libraries!
 
 ```go
