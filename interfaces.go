@@ -17,6 +17,10 @@ type LevelLogger interface {
 	// Note that s.String() will not be called if the level is not enabled.
 	Log(s fmt.Stringer)
 
+	// Logf logs a message at the given level using the format and args from calling fmt.Sprintf().
+	// Note that fmt.Sprintf() will not be called if the level is not enabled.
+	Logf(format string, a ...any)
+
 	// WithLevel returns a new entry with `level` set.
 	WithLevel(Level) *Entry
 

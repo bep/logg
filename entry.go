@@ -108,6 +108,14 @@ func (e *Entry) Log(s fmt.Stringer) {
 	e.logger.log(e, s)
 }
 
+// Log a message at the given level.
+func (e *Entry) Logf(format string, a ...any) {
+	e.logger.log(e, StringFunc(func() string {
+		return fmt.Sprintf(format, a...)
+	}))
+
+}
+
 // Clone returns a new Entry with the same fields.
 func (e *Entry) Clone() *Entry {
 	x := *e
