@@ -64,7 +64,7 @@ func Example_lazy_evaluation() {
 
 				}),
 		)
-		ctx.Log(logg.NewStringFunc(
+		ctx.Log(logg.StringFunc(
 			// This func will never be invoked with the current logger's level.
 			func() string {
 				return "log message: " + strings.Repeat("x", 9999)
