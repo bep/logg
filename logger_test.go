@@ -11,12 +11,24 @@ import (
 	qt "github.com/frankban/quicktest"
 )
 
-func TestLogger_printf(t *testing.T) {
+func TestLogger_Log(t *testing.T) {
 	h := memory.New()
 	l := logg.New(logg.Options{Level: logg.LevelInfo, Handler: h})
 	a := l.WithLevel(logg.LevelInfo)
 
 	a.Log(logg.String("logged in Tobi"))
+
+	e := h.Entries[0]
+	qt.Assert(t, "logged in Tobi", qt.Equals, e.Message)
+	qt.Assert(t, logg.LevelInfo, qt.Equals, e.Level)
+}
+
+func TestLogger_Logf(t *testing.T) {
+	h := memory.New()
+	l := logg.New(logg.Options{Level: logg.LevelInfo, Handler: h})
+	a := l.WithLevel(logg.LevelInfo)
+
+	a.Logf("logged in %s", "Tobi")
 
 	e := h.Entries[0]
 	qt.Assert(t, "logged in Tobi", qt.Equals, e.Message)
