@@ -195,7 +195,7 @@ func BenchmarkLogger_context_many_fields_duplicate_names_with_fields(b *testing.
 func BenchmarkLogger_levels(b *testing.B) {
 	doWork := func(l logg.LevelLogger) {
 		for i := 0; i < 10; i++ {
-			l.Log(logg.NewStringFunc(
+			l.Log(logg.StringFunc(
 				func() string {
 					return fmt.Sprintf("loging value %s and %s.", "value1", strings.Repeat("value2", i+1))
 				},

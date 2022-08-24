@@ -24,11 +24,6 @@ func (f StringFunc) String() string {
 	return f()
 }
 
-// NewStringFunc returns a StringFunc which implements Stringer.
-func NewStringFunc(f func() string) StringFunc {
-	return StringFunc(f)
-}
-
 func (s String) String() string {
 	return string(s)
 }
