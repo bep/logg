@@ -44,7 +44,7 @@ func BenchmarkDisabledWithoutFields(b *testing.B) {
 		b.ResetTimer()
 		b.RunParallel(func(pb *testing.PB) {
 			for pb.Next() {
-				message := logg.NewStringFunc(func() string { return getMessage(0) })
+				message := logg.StringFunc(func() string { return getMessage(0) })
 				logger.Log(message)
 			}
 		})
@@ -85,7 +85,7 @@ func BenchmarkDisabledAccumulatedContext(b *testing.B) {
 		b.ResetTimer()
 		b.RunParallel(func(pb *testing.PB) {
 			for pb.Next() {
-				message := logg.NewStringFunc(func() string { return getMessage(0) })
+				message := logg.StringFunc(func() string { return getMessage(0) })
 				logger.Log(message)
 			}
 		})
@@ -126,7 +126,7 @@ func BenchmarkDisabledAddingFields(b *testing.B) {
 		b.ResetTimer()
 		b.RunParallel(func(pb *testing.PB) {
 			for pb.Next() {
-				message := logg.NewStringFunc(func() string { return getMessage(0) })
+				message := logg.StringFunc(func() string { return getMessage(0) })
 				logger.WithFields(fakeLognFields()).Log(message)
 			}
 		})
@@ -167,7 +167,7 @@ func BenchmarkWithoutFields(b *testing.B) {
 		b.ResetTimer()
 		b.RunParallel(func(pb *testing.PB) {
 			for pb.Next() {
-				message := logg.NewStringFunc(func() string { return getMessage(0) })
+				message := logg.StringFunc(func() string { return getMessage(0) })
 				logger.Log(message)
 			}
 		})
@@ -264,7 +264,7 @@ func BenchmarkAccumulatedContext(b *testing.B) {
 		b.ResetTimer()
 		b.RunParallel(func(pb *testing.PB) {
 			for pb.Next() {
-				message := logg.NewStringFunc(func() string { return getMessage(0) })
+				message := logg.StringFunc(func() string { return getMessage(0) })
 				logger.Log(message)
 			}
 		})
@@ -343,7 +343,7 @@ func BenchmarkAddingFields(b *testing.B) {
 		b.ResetTimer()
 		b.RunParallel(func(pb *testing.PB) {
 			for pb.Next() {
-				message := logg.NewStringFunc(func() string { return getMessage(0) })
+				message := logg.StringFunc(func() string { return getMessage(0) })
 				logger.WithFields(fakeLognFields()).Log(message)
 			}
 		})
