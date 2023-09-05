@@ -1,4 +1,4 @@
-module github.com/bep/log/benchmarks
+module github.com/bep/logg/benchmarks
 
 go 1.18
 

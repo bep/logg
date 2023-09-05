@@ -28,20 +28,20 @@ import (
 )
 
 func newDisabledLoggLog() logg.LevelLogger {
-	logger := logg.NewLogger(logg.LoggerConfig{
+	logger := logg.New(logg.Options{
 		Handler: json.New(io.Discard),
-		Level:   logg.ErrorLevel,
+		Level:   logg.LevelError,
 	})
-	return logger.WithLevel(logg.InfoLevel)
+	return logger.WithLevel(logg.LevelInfo)
 }
 
 func newLoggLog() logg.LevelLogger {
-	logger := logg.NewLogger(logg.LoggerConfig{
+	logger := logg.New(logg.Options{
 		Handler: json.New(io.Discard),
-		Level:   logg.DebugLevel,
+		Level:   logg.LevelDebug,
 	})
 
-	return logger.WithLevel(logg.DebugLevel)
+	return logger.WithLevel(logg.LevelDebug)
 }
 
 func fakeLognFields() logg.FieldsFunc {
