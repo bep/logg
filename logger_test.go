@@ -39,6 +39,7 @@ func TestLogger_levels(t *testing.T) {
 	h := memory.New()
 	l := logg.New(logg.Options{Level: logg.LevelInfo, Handler: h})
 
+	l.WithLevel(logg.LevelTrace).Log(logg.String("uploading"))
 	l.WithLevel(logg.LevelDebug).Log(logg.String("uploading"))
 	l.WithLevel(logg.LevelInfo).Log(logg.String("upload complete"))
 

@@ -11,13 +11,13 @@ func TestParseLevel(t *testing.T) {
 	cases := []struct {
 		String string
 		Level  Level
-		Num    int
 	}{
-		{"debug", LevelDebug, 0},
-		{"info", LevelInfo, 1},
-		{"warn", LevelWarn, 2},
-		{"warning", LevelWarn, 3},
-		{"error", LevelError, 4},
+		{"trace", LevelTrace},
+		{"debug", LevelDebug},
+		{"info", LevelInfo},
+		{"warn", LevelWarn},
+		{"warning", LevelWarn},
+		{"error", LevelError},
 	}
 
 	for _, c := range cases {
