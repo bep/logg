@@ -19,6 +19,7 @@ var bold = color.New(color.Bold)
 
 // Colors mapping.
 var Colors = [...]*color.Color{
+	logg.LevelTrace: color.New(color.FgWhite),
 	logg.LevelDebug: color.New(color.FgWhite),
 	logg.LevelInfo:  color.New(color.FgBlue),
 	logg.LevelWarn:  color.New(color.FgYellow),
@@ -27,6 +28,7 @@ var Colors = [...]*color.Color{
 
 // Strings mapping.
 var Strings = [...]string{
+	logg.LevelTrace: "•",
 	logg.LevelDebug: "•",
 	logg.LevelInfo:  "•",
 	logg.LevelWarn:  "•",
