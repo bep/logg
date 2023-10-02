@@ -82,6 +82,21 @@ func TestLogger_WithField(t *testing.T) {
 	qt.Assert(t, e.Fields, qt.DeepEquals, logg.Fields{{"file", "sloth.png"}, {"user", "Tobi"}})
 }
 
+func TestLogger_WithIndent(t *testing.T) {
+	h := memory.New()
+	l := logg.New(logg.Options{Level: logg.LevelInfo, Handler: h})
+
+	info := l.WithLevel(logg.LevelInfo).WithIndent("  ")
+	info.Log(logg.String("upload complete"))
+
+	qt.Assert(t, len(h.Entries), qt.Equals, 1)
+
+	e := h.Entries[0]
+	qt.Assert(t, "upload complete", qt.Equals, e.Message)
+	qt.Assert(t, logg.LevelInfo, qt.Equals, e.Level)
+	qt.Assert(t, e.Indent, qt.Equals, "  ")
+}
+
 func TestLogger_HandlerFunc(t *testing.T) {
 	h := memory.New()
 	f := func(e *logg.Entry) error {

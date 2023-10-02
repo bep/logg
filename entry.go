@@ -19,6 +19,7 @@ type Entry struct {
 	Timestamp time.Time `json:"timestamp"`
 	Fields    Fields    `json:"fields,omitempty"`
 	Message   string    `json:"message"`
+	Indent    string    `json:"indent,omitempty"`
 
 	fieldsAddedCounter int
 }
@@ -32,6 +33,11 @@ func NewEntry(log *logger) *Entry {
 
 func (e Entry) WithLevel(level Level) *Entry {
 	e.Level = level
+	return &e
+}
+
+func (e Entry) WithIndent(indent string) *Entry {
+	e.Indent = indent
 	return &e
 }
 
@@ -113,7 +119,6 @@ func (e *Entry) Logf(format string, a ...any) {
 	e.logger.log(e, StringFunc(func() string {
 		return fmt.Sprintf(format, a...)
 	}))
-
 }
 
 // Clone returns a new Entry with the same fields.
@@ -129,6 +134,7 @@ func (e *Entry) reset() {
 	e.Level = 0
 	e.Fields = e.Fields[:0]
 	e.Message = ""
+	e.Indent = ""
 	e.Timestamp = time.Time{}
 }
 
@@ -156,6 +162,7 @@ func (e *Entry) finalize(dst *Entry, msg string) {
 	dst.Message = msg
 	dst.Timestamp = e.logger.Clock.Now()
 	dst.Level = e.Level
+	dst.Indent = e.Indent
 	if cap(dst.Fields) < len(e.Fields) {
 		dst.Fields = make(Fields, len(e.Fields))
 	} else {

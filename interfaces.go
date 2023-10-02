@@ -24,6 +24,9 @@ type LevelLogger interface {
 	// WithLevel returns a new entry with `level` set.
 	WithLevel(Level) *Entry
 
+	// WithIndent returns a new entry with the`indent` set.
+	WithIndent(string) *Entry
+
 	// WithFields returns a new entry with the`fields` in fields set.
 	// This is a noop if LevelLogger's level is less than Logger's.
 	WithFields(fields Fielder) *Entry
