@@ -20,13 +20,16 @@ func New(h ...logg.Handler) *Handler {
 // HandleLog implements logg.Handler.
 func (h *Handler) HandleLog(e *logg.Entry) error {
 	for _, handler := range h.Handlers {
+		if e.Disabled {
+			return nil
+		}
 		// TODO(tj): maybe just write to stderr here, definitely not ideal
 		// to miss out logging to a more critical handler if something
 		// goes wrong
 		if err := handler.HandleLog(e); err != nil {
 			return err
 		}
-	}
 
+	}
 	return nil
 }

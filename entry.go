@@ -15,10 +15,25 @@ var (
 type Entry struct {
 	logger *logger
 
-	Level     Level     `json:"level"`
+	// The log level of this entry.
+	Level Level `json:"level"`
+
+	// The timestamp of this entry.
 	Timestamp time.Time `json:"timestamp"`
-	Fields    Fields    `json:"fields,omitempty"`
-	Message   string    `json:"message"`
+
+	// The fields of this entry.
+	Fields Fields `json:"fields,omitempty"`
+
+	// The message of this entry.
+	Message string `json:"message"`
+
+	// Disabled is set to true if this entry should be disabled.
+	// This can be set by a handler to signal that this entry should
+	// not continue in the handler chain.
+	// Note that this must be evaluated in the handlers,
+	// and is built into the multi handler,
+	// which is the common use case for this.
+	Disabled bool `json:"-"`
 
 	fieldsAddedCounter int
 }
@@ -113,7 +128,6 @@ func (e *Entry) Logf(format string, a ...any) {
 	e.logger.log(e, StringFunc(func() string {
 		return fmt.Sprintf(format, a...)
 	}))
-
 }
 
 // Clone returns a new Entry with the same fields.
@@ -130,6 +144,7 @@ func (e *Entry) reset() {
 	e.Fields = e.Fields[:0]
 	e.Message = ""
 	e.Timestamp = time.Time{}
+	e.Disabled = false
 }
 
 // Remove any early entries with the same name.

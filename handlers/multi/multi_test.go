@@ -51,3 +51,26 @@ func TestMultiModifyEntry(t *testing.T) {
 	qt.Assert(t, b.Entries[0].Fields[0].Name, qt.Equals, "initial")
 	qt.Assert(t, b.Entries[0].Fields[1].Name, qt.Equals, "added")
 }
+
+func TestMultDisableEntry(t *testing.T) {
+	var a logg.HandlerFunc = func(e *logg.Entry) error {
+		if e.Fields[0].Value == "v2" {
+			e.Disabled = true
+		}
+		return nil
+	}
+
+	b := memory.New()
+
+	l := logg.New(
+		logg.Options{
+			Level:   logg.LevelInfo,
+			Handler: multi.New(a, b),
+		})
+
+	l.WithLevel(logg.LevelInfo).WithField("v", "v1").Log(logg.String("text1"))
+	l.WithLevel(logg.LevelInfo).WithField("v", "v2").Log(logg.String("text2"))
+	l.WithLevel(logg.LevelInfo).WithField("v", "v3").Log(logg.String("text3"))
+
+	qt.Assert(t, b.Entries, qt.HasLen, 2)
+}
