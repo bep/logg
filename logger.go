@@ -137,6 +137,10 @@ func (l *logger) WithError(err error) *Entry {
 	return NewEntry(l).WithError(err)
 }
 
+// ErrStopLogEntry is a sentinel error that can be returned from a
+// handler to stop the entry from being passed to the next handler.
+var ErrStopLogEntry = fmt.Errorf("stop log entry")
+
 // log the message, invoking the handler.
 func (l *logger) log(e *Entry, s fmt.Stringer) {
 	if e.Level < l.Level {
@@ -148,6 +152,8 @@ func (l *logger) log(e *Entry, s fmt.Stringer) {
 	e.finalize(finalized, s.String())
 
 	if err := l.Handler.HandleLog(finalized); err != nil {
-		stdlog.Printf("error logging: %s", err)
+		if err != ErrStopLogEntry {
+			stdlog.Printf("error logging: %s", err)
+		}
 	}
 }
