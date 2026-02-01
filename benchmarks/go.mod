@@ -1,6 +1,6 @@
 module github.com/bep/logg/benchmarks
 
-go 1.18
+go 1.24.0
 
 replace github.com/bep/logg => ../
 
@@ -20,10 +20,10 @@ require (
 	github.com/bep/logg v0.0.0-20220809094309-f3eda2566f97
 	github.com/go-logfmt/logfmt v0.5.1 // indirect
 	github.com/go-stack/stack v1.8.1 // indirect
-	github.com/mattn/go-colorable v0.1.12 // indirect
-	github.com/mattn/go-isatty v0.0.14 // indirect
+	github.com/mattn/go-colorable v0.1.14 // indirect
+	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	go.uber.org/atomic v1.9.0 // indirect
 	go.uber.org/goleak v1.1.12 // indirect
-	golang.org/x/sys v0.0.0-20220804214406-8e32c043e418 // indirect
+	golang.org/x/sys v0.40.0 // indirect
 )
