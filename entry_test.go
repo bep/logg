@@ -38,7 +38,7 @@ func TestEntry_WithManyFieldsWithSameName(t *testing.T) {
 
 	b := a.WithFields(logg.Fields{{"foo", "bar"}})
 
-	for i := 0; i < 100; i++ {
+	for range 100 {
 		b = b.WithFields(logg.Fields{{"foo", "bar"}})
 	}
 

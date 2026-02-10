@@ -53,7 +53,7 @@ func Example_lazy_evaluation() {
 	infoLogger := l.WithLevel(logg.LevelInfo)
 
 	// Simulate a busy loop.
-	for i := 0; i < 999; i++ {
+	for range 999 {
 		ctx := infoLogger.WithFields(
 			logg.NewFieldsFunc(
 				// This func will never be invoked with the current logger's level.
